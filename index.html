@@ -308,6 +308,24 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            .correct-answer-display {
+                display: inline-block;
+                color: #16a34a;
+                background: #dcfce7;
+                border: 1px solid #86efac;
+                border-radius: 5px;
+                padding: 3px 8px;
+                margin-left: 5px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            .wrong-answer-label {
+                color: #dc2626;
+                font-size: 13px;
+                font-weight: bold;
+                margin-left: 5px;
+            }
         }
     </style>
 </head>
@@ -1491,15 +1509,9 @@ function renderQuiz() {
 function checkAnswers() {
 
     let total = 0;
-
     let correct = 0;
-
     let wrong = 0;
 
-
-    /*
-        Find every multi-word blank.
-    */
 
     currentQuiz.forEach(
         verseData => {
@@ -1516,15 +1528,13 @@ function checkAnswers() {
 
 
                 if (!wordData.blank) {
-
                     i++;
                     continue;
-
                 }
 
 
                 /*
-                    Collect the complete blank.
+                    Collect the complete multi-word blank.
                 */
 
                 const blankWords = [];
@@ -1546,12 +1556,13 @@ function checkAnswers() {
                 }
 
 
-                /*
-                    One multi-word phrase = one question.
-                */
-
                 total++;
 
+
+                /*
+                    Find the input belonging to
+                    this phrase.
+                */
 
                 const input =
                     document.querySelector(
@@ -1560,10 +1571,8 @@ function checkAnswers() {
 
 
                 if (!input) {
-
                     i = j;
                     continue;
-
                 }
 
 
@@ -1581,16 +1590,7 @@ function checkAnswers() {
 
 
                 /*
-                    Save the user's answer to
-                    the first word of the blank.
-                */
-
-                verseData.words[i].userAnswer =
-                    userAnswer;
-
-
-                /*
-                    Compare the ENTIRE phrase.
+                    Check the ENTIRE phrase.
                 */
 
                 const isCorrect =
@@ -1601,22 +1601,25 @@ function checkAnswers() {
 
 
                 /*
-                    Save result to every word
-                    belonging to this blank.
+                    Save result.
                 */
 
                 blankWords.forEach(
-                    wordData => {
+                    word => {
 
-                        wordData.correct =
-                            isCorrect;
-
-                        wordData.userAnswer =
+                        word.userAnswer =
                             userAnswer;
+
+                        word.correct =
+                            isCorrect;
 
                     }
                 );
 
+
+                /*
+                    Remove previous result styling.
+                */
 
                 input.classList.remove(
                     "correct",
@@ -1625,34 +1628,94 @@ function checkAnswers() {
                 );
 
 
-                input.classList.add(
-                    isCorrect
-                        ? "correct"
-                        : "wrong"
-                );
+                /*
+                    Create/remove answer display.
+                */
+
+                const oldAnswer =
+                    input.parentNode.querySelector(
+                        `.correct-answer-display[data-for-verse="${verseData.verse}"][data-for-word="${i}"]`
+                    );
 
 
-                input.classList.add(
-                    "checked"
-                );
+                if (oldAnswer) {
+                    oldAnswer.remove();
+                }
 
 
-                input.readOnly = true;
-
+                /*
+                    CORRECT
+                */
 
                 if (isCorrect) {
 
+                    input.classList.add(
+                        "correct"
+                    );
+
                     correct++;
-
-                } else {
-
-                    wrong++;
 
                 }
 
 
                 /*
-                    Move to the next group.
+                    WRONG
+                */
+
+                else {
+
+                    input.classList.add(
+                        "wrong"
+                    );
+
+                    wrong++;
+
+
+                    /*
+                        Show the correct answer.
+                    */
+
+                    const answerDisplay =
+                        document.createElement("span");
+
+
+                    answerDisplay.className =
+                        "correct-answer-display";
+
+
+                    answerDisplay.dataset.forVerse =
+                        verseData.verse;
+
+
+                    answerDisplay.dataset.forWord =
+                        i;
+
+
+                    answerDisplay.textContent =
+                        `✓ ${correctAnswer}`;
+
+
+                    input.insertAdjacentElement(
+                        "afterend",
+                        answerDisplay
+                    );
+
+                }
+
+
+                /*
+                    Lock the input after checking.
+                */
+
+                input.classList.add(
+                    "checked"
+                );
+
+                input.readOnly = true;
+
+
+                /*
+                    Move to the next blank group.
                 */
 
                 i = j;
@@ -1667,8 +1730,7 @@ function checkAnswers() {
 
 
     /*
-        Calculate score based on BLANK PHRASES,
-        not individual words.
+        Calculate score.
     */
 
     const score =
@@ -1721,7 +1783,8 @@ function checkAnswers() {
 
 
     /*
-        Retest button.
+        Show Retest button only if
+        there are wrong answers.
     */
 
     if (wrong > 0) {
@@ -1740,7 +1803,7 @@ function checkAnswers() {
 
 
     /*
-        New quiz button.
+        Show New Quiz button.
     */
 
     document
@@ -1977,7 +2040,7 @@ function retestWrongAnswers() {
 
 
     /*
-        Find every previously wrong blank phrase.
+        Find all wrong multi-word blanks.
     */
 
     currentQuiz.forEach(
@@ -1990,12 +2053,8 @@ function retestWrongAnswers() {
                 i < verseData.words.length
             ) {
 
-                const wordData =
-                    verseData.words[i];
-
-
                 if (
-                    !wordData.blank
+                    !verseData.words[i].blank
                 ) {
 
                     i++;
@@ -2024,12 +2083,12 @@ function retestWrongAnswers() {
 
 
                 /*
-                    If the first word is marked wrong,
-                    the entire phrase is wrong.
+                    The whole phrase is wrong
+                    if its first word is wrong.
                 */
 
                 if (
-                    wordData.correct === false
+                    verseData.words[i].correct === false
                 ) {
 
                     wrongGroups.push({
@@ -2069,7 +2128,7 @@ function retestWrongAnswers() {
 
 
     /*
-        Clear all previous blanks.
+        Clear ALL previous blanks.
     */
 
     currentQuiz.forEach(
@@ -2095,8 +2154,8 @@ function retestWrongAnswers() {
 
 
     /*
-        Restore ONLY the wrong multi-word
-        phrases as blanks.
+        Make ONLY the previously wrong
+        phrases into blanks again.
     */
 
     wrongGroups.forEach(
@@ -2146,7 +2205,11 @@ function retestWrongAnswers() {
 
 
     /*
-        Render retest.
+        Render the quiz again.
+
+        This automatically removes the
+        correct-answer displays because
+        renderQuiz() rebuilds the verse.
     */
 
     quizChecked = false;
