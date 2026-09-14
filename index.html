@@ -1,0 +1,1756 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Revelation Fill-in-the-Blank Quiz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.85;
+        }
+
+        .settings {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field label {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .start-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .check-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .retest-btn {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .restart-btn {
+            background: #475569;
+            color: white;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .quiz-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-title h2 {
+            margin: 0;
+        }
+
+        .score-display {
+            font-weight: bold;
+        }
+
+        .verse {
+            margin-bottom: 18px;
+            line-height: 2;
+            font-size: 17px;
+        }
+
+        .verse-number {
+            font-weight: bold;
+            color: #2563eb;
+            margin-right: 6px;
+        }
+
+        .blank-input {
+            display: inline-block;
+            vertical-align: middle;
+            min-width: 65px;
+            width: 90px;
+            max-width: 100%;
+            height: 34px;
+            margin: 0 3px;
+            padding: 3px 7px;
+            border: 2px solid #94a3b8;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        /*
+         * Correct answer
+         */
+        .blank-input.correct {
+            border-color: #16a34a;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /*
+         * Wrong answer
+         */
+        .blank-input.wrong {
+            border-color: #dc2626;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /*
+         * Unanswered
+         */
+        .blank-input.unanswered {
+            border-color: #dc2626;
+            background: #fee2e2;
+        }
+
+        /*
+         * Once checked, inputs become readonly.
+         */
+        .blank-input.checked {
+            cursor: default;
+        }
+
+        .wrong-answer-text {
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .correct-answer-text {
+            color: #16a34a;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .button-area {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .results {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+        }
+
+        .results h3 {
+            margin-top: 0;
+        }
+
+        .result-score {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #15803d;
+        }
+
+        .failure {
+            color: #dc2626;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #fff7ed;
+            border-left: 5px solid #f97316;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 800px) {
+            .settings-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .container {
+                padding: 10px;
+                margin: 10px auto;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .quiz-card {
+                padding: 15px;
+            }
+
+            .verse {
+                font-size: 16px;
+            }
+
+            .quiz-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="header">
+        <h1>📖 Revelation Fill-in-the-Blank Quiz</h1>
+        <p>NIV 2011 • Chapters 4–6</p>
+    </div>
+
+
+    <!-- =========================
+         SETTINGS
+    ========================== -->
+
+    <div class="settings">
+
+        <div class="info-box">
+            <strong>How to use:</strong><br>
+            Select a chapter, choose the percentage of words to hide,
+            select your verse range, and press <strong>Start Quiz</strong>.
+            The blank positions will be randomized each time.
+        </div>
+
+        <div class="settings-grid">
+
+            <div class="field">
+                <label for="chapterSelect">
+                    Chapter
+                </label>
+
+                <select id="chapterSelect">
+                    <option value="4">Revelation 4</option>
+                    <option value="5">Revelation 5</option>
+                    <option value="6">Revelation 6</option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label for="percentageSelect">
+                    Blank Percentage
+                </label>
+
+                <select id="percentageSelect">
+                    <option value="10">10%</option>
+                    <option value="20">20%</option>
+                    <option value="30" selected>30%</option>
+                    <option value="40">40%</option>
+                    <option value="50">50%</option>
+                    <option value="60">60%</option>
+                    <option value="70">70%</option>
+                    <option value="80">80%</option>
+                    <option value="90">90%</option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label for="fromVerse">
+                    From Verse
+                </label>
+
+                <input
+                    type="number"
+                    id="fromVerse"
+                    min="1"
+                    value="1"
+                >
+            </div>
+
+
+            <div class="field">
+                <label for="toVerse">
+                    To Verse
+                </label>
+
+                <input
+                    type="number"
+                    id="toVerse"
+                    min="1"
+                    value="1"
+                >
+            </div>
+
+        </div>
+
+        <br>
+
+        <button
+            class="start-btn"
+            onclick="startQuiz()"
+        >
+            ▶ Start Quiz
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         QUIZ
+    ========================== -->
+
+    <div
+        id="quizCard"
+        class="quiz-card"
+    >
+
+        <div class="quiz-title">
+
+            <h2 id="quizHeading">
+                Revelation 4
+            </h2>
+
+            <div
+                id="scoreDisplay"
+                class="score-display"
+            >
+                Not checked
+            </div>
+
+        </div>
+
+
+        <div id="quizContent"></div>
+
+
+        <div class="button-area">
+
+            <button
+                id="checkButton"
+                class="check-btn"
+                onclick="checkAnswers()"
+            >
+                ✓ Check Answers
+            </button>
+
+
+            <button
+                id="retestButton"
+                class="retest-btn hidden"
+                onclick="retestWrongAnswers()"
+            >
+                🔄 Retest Wrong Answers
+            </button>
+
+
+            <button
+                id="restartButton"
+                class="restart-btn hidden"
+                onclick="startQuiz()"
+            >
+                ↻ New Quiz
+            </button>
+
+        </div>
+
+
+        <div
+            id="results"
+            class="results"
+        >
+            <h3>Quiz Result</h3>
+
+            <div
+                id="resultScore"
+                class="result-score"
+            >
+            </div>
+
+            <p id="resultDetails"></p>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/*
+===========================================================
+    IMPORTANT
+===========================================================
+
+    PASTE YOUR LEGALLY OBTAINED NIV 2011 TEXT BELOW.
+
+    Format:
+
+    1: "Your verse 1 text here.",
+    2: "Your verse 2 text here.",
+    3: "Your verse 3 text here.",
+
+    Do this for Revelation 4, 5 and 6.
+
+===========================================================
+*/
+
+
+const bibleData = {
+
+    4: {
+
+        1: "PASTE NIV 2011 REVELATION 4:1 HERE",
+
+        2: "PASTE NIV 2011 REVELATION 4:2 HERE",
+
+        3: "PASTE NIV 2011 REVELATION 4:3 HERE",
+
+        4: "PASTE NIV 2011 REVELATION 4:4 HERE",
+
+        5: "PASTE NIV 2011 REVELATION 4:5 HERE",
+
+        6: "PASTE NIV 2011 REVELATION 4:6 HERE",
+
+        7: "PASTE NIV 2011 REVELATION 4:7 HERE",
+
+        8: "PASTE NIV 2011 REVELATION 4:8 HERE",
+
+        9: "PASTE NIV 2011 REVELATION 4:9 HERE",
+
+        10: "PASTE NIV 2011 REVELATION 4:10 HERE",
+
+        11: "PASTE NIV 2011 REVELATION 4:11 HERE"
+
+    },
+
+
+    5: {
+
+        1: "PASTE NIV 2011 REVELATION 5:1 HERE",
+
+        2: "PASTE NIV 2011 REVELATION 5:2 HERE",
+
+        3: "PASTE NIV 2011 REVELATION 5:3 HERE",
+
+        4: "PASTE NIV 2011 REVELATION 5:4 HERE",
+
+        5: "PASTE NIV 2011 REVELATION 5:5 HERE",
+
+        6: "PASTE NIV 2011 REVELATION 5:6 HERE",
+
+        7: "PASTE NIV 2011 REVELATION 5:7 HERE",
+
+        8: "PASTE NIV 2011 REVELATION 5:8 HERE",
+
+        9: "PASTE NIV 2011 REVELATION 5:9 HERE",
+
+        10: "PASTE NIV 2011 REVELATION 5:10 HERE",
+
+        11: "PASTE NIV 2011 REVELATION 5:11 HERE",
+
+        12: "PASTE NIV 2011 REVELATION 5:12 HERE",
+
+        13: "PASTE NIV 2011 REVELATION 5:13 HERE",
+
+        14: "PASTE NIV 2011 REVELATION 5:14 HERE"
+
+    },
+
+
+    6: {
+
+        1: "I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
+
+        2: I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
+
+        3: "When the Lamb opened the second seal, I heard the second living creature say, “Come!”",
+
+        4: "Then another horse came out, a fiery red one. Its rider was given power to take peace from the earth and to make people kill each other. To him was given a large sword.",
+
+        5: "When the Lamb opened the third seal, I heard the third living creature say, “Come!” I looked, and there before me was a black horse! Its rider was holding a pair of scales in his hand.",
+
+        6: "Then I heard what sounded like a voice among the four living creatures, saying, “Two pounds of wheat for a day’s wages, and six pounds of barley for a day’s wages, and do not damage the oil and the wine!”",
+
+        7: "When the Lamb opened the fourth seal, I heard the voice of the fourth living creature say, “Come!”",
+
+        8: "PASTE NIV 2011 REVELATION 6:8 HERE",
+
+        9: "PASTE NIV 2011 REVELATION 6:9 HERE",
+
+        10: "PASTE NIV 2011 REVELATION 6:10 HERE",
+
+        11: "PASTE NIV 2011 REVELATION 6:11 HERE",
+
+        12: "PASTE NIV 2011 REVELATION 6:12 HERE",
+
+        13: "PASTE NIV 2011 REVELATION 6:13 HERE",
+
+        14: "PASTE NIV 2011 REVELATION 6:14 HERE",
+
+        15: "PASTE NIV 2011 REVELATION 6:15 HERE",
+
+        16: "PASTE NIV 2011 REVELATION 6:16 HERE",
+
+        17: "PASTE NIV 2011 REVELATION 6:17 HERE"
+
+    }
+
+};
+
+
+/*
+===========================================================
+    GLOBAL VARIABLES
+===========================================================
+*/
+
+let currentChapter = null;
+
+let currentFromVerse = null;
+
+let currentToVerse = null;
+
+let currentPercentage = null;
+
+let currentQuiz = [];
+
+let quizChecked = false;
+
+
+/*
+===========================================================
+    INITIALIZE VERSE LIMITS
+===========================================================
+*/
+
+document
+    .getElementById("chapterSelect")
+    .addEventListener("change", updateVerseLimits);
+
+
+function updateVerseLimits() {
+
+    const chapter =
+        Number(
+            document.getElementById("chapterSelect").value
+        );
+
+    const verses =
+        Object.keys(bibleData[chapter])
+            .map(Number);
+
+    const maxVerse =
+        Math.max(...verses);
+
+
+    const fromInput =
+        document.getElementById("fromVerse");
+
+    const toInput =
+        document.getElementById("toVerse");
+
+
+    fromInput.max = maxVerse;
+
+    toInput.max = maxVerse;
+
+
+    fromInput.value = 1;
+
+    toInput.value = maxVerse;
+}
+
+
+/*
+===========================================================
+    START QUIZ
+===========================================================
+*/
+
+function startQuiz() {
+
+    currentChapter =
+        Number(
+            document.getElementById("chapterSelect").value
+        );
+
+    currentFromVerse =
+        Number(
+            document.getElementById("fromVerse").value
+        );
+
+    currentToVerse =
+        Number(
+            document.getElementById("toVerse").value
+        );
+
+    currentPercentage =
+        Number(
+            document.getElementById("percentageSelect").value
+        );
+
+
+    const chapterData =
+        bibleData[currentChapter];
+
+
+    const availableVerses =
+        Object.keys(chapterData)
+            .map(Number)
+            .sort((a, b) => a - b);
+
+
+    const maxVerse =
+        Math.max(...availableVerses);
+
+
+    /*
+        Validate verse range.
+    */
+
+    if (
+        currentFromVerse < 1 ||
+        currentToVerse > maxVerse ||
+        currentFromVerse > currentToVerse
+    ) {
+
+        alert(
+            `Please enter a valid verse range from 1 to ${maxVerse}.`
+        );
+
+        return;
+    }
+
+
+    /*
+        Create quiz.
+    */
+
+    currentQuiz =
+        createQuiz(
+            currentChapter,
+            currentFromVerse,
+            currentToVerse,
+            currentPercentage
+        );
+
+
+    quizChecked = false;
+
+
+    renderQuiz();
+
+
+    /*
+        Show quiz.
+    */
+
+    document
+        .getElementById("quizCard")
+        .style.display = "block";
+
+
+    document
+        .getElementById("quizCard")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+}
+
+
+/*
+===========================================================
+    CREATE QUIZ
+===========================================================
+*/
+
+function createQuiz(
+    chapter,
+    fromVerse,
+    toVerse,
+    percentage
+) {
+
+    const quiz = [];
+
+
+    /*
+        First collect all words.
+    */
+
+    let totalWords = 0;
+
+
+    for (
+        let verse = fromVerse;
+        verse <= toVerse;
+        verse++
+    ) {
+
+        const text =
+            bibleData[chapter][verse];
+
+
+        if (
+            !text ||
+            text.startsWith("PASTE NIV")
+        ) {
+            continue;
+        }
+
+
+        const words =
+            tokenizeText(text);
+
+
+        totalWords += words.length;
+    }
+
+
+    /*
+        Calculate number of blanks.
+
+        At least one blank will be created
+        when there are words available.
+    */
+
+    let blankCount =
+        Math.round(
+            totalWords *
+            percentage /
+            100
+        );
+
+
+    if (
+        totalWords > 0 &&
+        blankCount < 1
+    ) {
+        blankCount = 1;
+    }
+
+
+    /*
+        Generate random positions.
+
+        Every eligible word gets an index.
+    */
+
+    const positions = [];
+
+    let globalIndex = 0;
+
+
+    for (
+        let verse = fromVerse;
+        verse <= toVerse;
+        verse++
+    ) {
+
+        const text =
+            bibleData[chapter][verse];
+
+
+        if (
+            !text ||
+            text.startsWith("PASTE NIV")
+        ) {
+            continue;
+        }
+
+
+        const words =
+            tokenizeText(text);
+
+
+        words.forEach(
+            (word, wordIndex) => {
+
+                positions.push({
+                    verse: verse,
+                    wordIndex: wordIndex,
+                    globalIndex: globalIndex
+                });
+
+                globalIndex++;
+            }
+        );
+    }
+
+
+    /*
+        Shuffle positions.
+    */
+
+    shuffleArray(positions);
+
+
+    /*
+        Select blank positions.
+    */
+
+    const selectedPositions =
+        new Set(
+            positions
+                .slice(0, blankCount)
+                .map(
+                    position =>
+                        `${position.verse}-${position.wordIndex}`
+                )
+        );
+
+
+    /*
+        Build quiz.
+    */
+
+    for (
+        let verse = fromVerse;
+        verse <= toVerse;
+        verse++
+    ) {
+
+        const text =
+            bibleData[chapter][verse];
+
+
+        if (
+            !text ||
+            text.startsWith("PASTE NIV")
+        ) {
+            continue;
+        }
+
+
+        const words =
+            tokenizeText(text);
+
+
+        const verseQuiz = {
+
+            verse: verse,
+
+            words: words.map(
+                (word, index) => ({
+
+                    original: word,
+
+                    blank:
+                        selectedPositions.has(
+                            `${verse}-${index}`
+                        ),
+
+                    answer: word,
+
+                    userAnswer: "",
+
+                    correct: null
+
+                })
+            )
+
+        };
+
+
+        quiz.push(verseQuiz);
+    }
+
+
+    return quiz;
+}
+
+
+/*
+===========================================================
+    TOKENIZE TEXT
+===========================================================
+
+    We keep punctuation attached to words visually.
+
+    Example:
+
+    "throne,"
+    
+    remains:
+
+    "throne,"
+
+    However, punctuation will be ignored during marking.
+===========================================================
+*/
+
+function tokenizeText(text) {
+
+    return text
+        .trim()
+        .split(/\s+/);
+}
+
+
+/*
+===========================================================
+    RENDER QUIZ
+===========================================================
+*/
+
+function renderQuiz() {
+
+    const content =
+        document.getElementById("quizContent");
+
+
+    content.innerHTML = "";
+
+
+    document
+        .getElementById("quizHeading")
+        .textContent =
+            `Revelation ${currentChapter}`;
+
+
+    document
+        .getElementById("scoreDisplay")
+        .textContent =
+            `${currentFromVerse}:${currentToVerse} • ${currentPercentage}% blanks`;
+
+
+    currentQuiz.forEach(
+        verseData => {
+
+            const verseDiv =
+                document.createElement("div");
+
+
+            verseDiv.className =
+                "verse";
+
+
+            const verseNumber =
+                document.createElement("span");
+
+
+            verseNumber.className =
+                "verse-number";
+
+
+            verseNumber.textContent =
+                verseData.verse + ".";
+
+
+            verseDiv.appendChild(
+                verseNumber
+            );
+
+
+            verseData.words.forEach(
+                (wordData, wordIndex) => {
+
+                    if (
+                        wordData.blank
+                    ) {
+
+                        const input =
+                            document.createElement("input");
+
+
+                        input.type = "text";
+
+                        input.className =
+                            "blank-input";
+
+
+                        input.dataset.verse =
+                            verseData.verse;
+
+
+                        input.dataset.wordIndex =
+                            wordIndex;
+
+
+                        /*
+                            Size the box based on
+                            original word length.
+                        */
+
+                        const cleanWord =
+                            removePunctuation(
+                                wordData.original
+                            );
+
+
+                        const width =
+                            Math.max(
+                                65,
+                                Math.min(
+                                    250,
+                                    cleanWord.length * 12 + 25
+                                )
+                            );
+
+
+                        input.style.width =
+                            width + "px";
+
+
+                        input.autocomplete =
+                            "off";
+
+
+                        input.spellcheck =
+                            false;
+
+
+                        input.addEventListener(
+                            "input",
+                            function () {
+
+                                wordData.userAnswer =
+                                    this.value;
+
+                                /*
+                                    If the user changes
+                                    an answer after an
+                                    unsuccessful check,
+                                    remove the old result
+                                    colour.
+                                */
+
+                                if (!quizChecked) {
+                                    this.classList.remove(
+                                        "correct",
+                                        "wrong",
+                                        "unanswered"
+                                    );
+                                }
+
+                            }
+                        );
+
+
+                        verseDiv.appendChild(
+                            input
+                        );
+
+                    } else {
+
+                        /*
+                            Normal word.
+                        */
+
+                        const textNode =
+                            document.createTextNode(
+                                wordData.original + " "
+                            );
+
+
+                        verseDiv.appendChild(
+                            textNode
+                        );
+                    }
+
+                }
+            );
+
+
+            content.appendChild(
+                verseDiv
+            );
+        }
+    );
+
+
+    /*
+        Reset buttons/results.
+    */
+
+    document
+        .getElementById("checkButton")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("retestButton")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("restartButton")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("results")
+        .style.display = "none";
+}
+
+
+/*
+===========================================================
+    CHECK ANSWERS
+===========================================================
+*/
+
+function checkAnswers() {
+
+    let total = 0;
+
+    let correct = 0;
+
+    let wrong = 0;
+
+
+    currentQuiz.forEach(
+        verseData => {
+
+            verseData.words.forEach(
+                wordData => {
+
+                    if (!wordData.blank) {
+                        return;
+                    }
+
+
+                    total++;
+
+
+                    /*
+                        Find input.
+                    */
+
+                    const input =
+                        document.querySelector(
+                            `.blank-input[data-verse="${verseData.verse}"][data-word-index="${verseData.words.indexOf(wordData)}"]`
+                        );
+
+
+                    if (!input) {
+                        return;
+                    }
+
+
+                    const userAnswer =
+                        input.value;
+
+
+                    wordData.userAnswer =
+                        userAnswer;
+
+
+                    /*
+                        Compare answers.
+                    */
+
+                    const isCorrect =
+                        wordsAreEquivalent(
+                            userAnswer,
+                            wordData.answer
+                        );
+
+
+                    wordData.correct =
+                        isCorrect;
+
+
+                    input.classList.remove(
+                        "correct",
+                        "wrong",
+                        "unanswered"
+                    );
+
+
+                    input.classList.add(
+                        isCorrect
+                            ? "correct"
+                            : "wrong"
+                    );
+
+
+                    input.classList.add(
+                        "checked"
+                    );
+
+
+                    input.readOnly = true;
+
+
+                    if (isCorrect) {
+
+                        correct++;
+
+                    } else {
+
+                        wrong++;
+
+                    }
+
+                }
+            );
+        }
+    );
+
+
+    quizChecked = true;
+
+
+    /*
+        Calculate score.
+    */
+
+    const score =
+        total === 0
+            ? 0
+            : Math.round(
+                (correct / total) * 100
+            );
+
+
+    document
+        .getElementById("scoreDisplay")
+        .textContent =
+            `Score: ${score}%`;
+
+
+    /*
+        Display result.
+    */
+
+    const results =
+        document.getElementById("results");
+
+
+    results.style.display =
+        "block";
+
+
+    document
+        .getElementById("resultScore")
+        .textContent =
+            `${score}%`;
+
+
+    document
+        .getElementById("resultScore")
+        .className =
+            "result-score " +
+            (
+                score >= 80
+                    ? "success"
+                    : "failure"
+            );
+
+
+    document
+        .getElementById("resultDetails")
+        .textContent =
+            `Correct: ${correct} • Wrong: ${wrong} • Total blanks: ${total}`;
+
+
+    /*
+        Retest button only appears
+        if there are wrong answers.
+    */
+
+    if (wrong > 0) {
+
+        document
+            .getElementById("retestButton")
+            .classList.remove("hidden");
+
+    } else {
+
+        document
+            .getElementById("retestButton")
+            .classList.add("hidden");
+    }
+
+
+    /*
+        Show new quiz button.
+    */
+
+    document
+        .getElementById("restartButton")
+        .classList.remove("hidden");
+
+
+    /*
+        Hide Check button after checking.
+    */
+
+    document
+        .getElementById("checkButton")
+        .classList.add("hidden");
+
+
+    results.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+
+/*
+===========================================================
+    WORD COMPARISON
+===========================================================
+
+    Rules:
+
+    1. Word-by-word strict checking.
+    2. Punctuation ignored.
+    3. Capitalization ignored.
+    4. Apostrophe variations accepted.
+    5. God's = Gods = God s
+    6. Similar possessive forms are normalized.
+
+===========================================================
+*/
+
+function normalizeWord(word) {
+
+    if (!word) {
+        return "";
+    }
+
+
+    let normalized =
+        word
+            .toLowerCase()
+            .trim();
+
+
+    /*
+        Remove punctuation.
+
+        Examples:
+
+        throne,
+        throne.
+        throne;
+        throne:
+
+        become:
+
+        throne
+    */
+
+    normalized =
+        normalized.replace(
+            /[.,!?;:"“”‘’()[\]{}—–\-]/g,
+            ""
+        );
+
+
+    /*
+        Remove apostrophes.
+
+        God's
+        God’s
+        Gods
+
+        all become:
+
+        gods
+    */
+
+    normalized =
+        normalized.replace(
+            /['’`]/g,
+            ""
+        );
+
+
+    /*
+        Remove whitespace.
+
+        God s
+        becomes:
+
+        gods
+    */
+
+    normalized =
+        normalized.replace(
+            /\s+/g,
+            ""
+        );
+
+
+    return normalized;
+}
+
+
+function wordsAreEquivalent(
+    userAnswer,
+    correctAnswer
+) {
+
+    return (
+        normalizeWord(userAnswer) ===
+        normalizeWord(correctAnswer)
+    );
+}
+
+
+/*
+===========================================================
+    REMOVE PUNCTUATION
+===========================================================
+*/
+
+function removePunctuation(word) {
+
+    return word
+        .replace(
+            /[.,!?;:"“”‘’()[\]{}—–\-]/g,
+            ""
+        );
+}
+
+
+/*
+===========================================================
+    RETEST WRONG ANSWERS
+===========================================================
+
+    Important:
+
+    Only words that were previously wrong
+    become blanks.
+
+    Correct words are shown normally.
+
+    The wrong words are randomized into a
+    new test arrangement if there are multiple
+    wrong words.
+
+===========================================================
+*/
+
+function retestWrongAnswers() {
+
+    const wrongWords = [];
+
+
+    /*
+        Collect wrong answers.
+    */
+
+    currentQuiz.forEach(
+        verseData => {
+
+            verseData.words.forEach(
+                (wordData, wordIndex) => {
+
+                    if (
+                        wordData.blank &&
+                        wordData.correct === false
+                    ) {
+
+                        wrongWords.push({
+
+                            verse:
+                                verseData.verse,
+
+                            wordIndex:
+                                wordIndex,
+
+                            original:
+                                wordData.original
+
+                        });
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    if (
+        wrongWords.length === 0
+    ) {
+
+        alert(
+            "There are no wrong answers to retest."
+        );
+
+        return;
+    }
+
+
+    /*
+        Remove previous quiz blanks.
+
+        Then make ONLY the wrong words
+        into blanks.
+    */
+
+    currentQuiz.forEach(
+        verseData => {
+
+            verseData.words.forEach(
+                wordData => {
+
+                    wordData.blank =
+                        false;
+
+                    wordData.userAnswer =
+                        "";
+
+                    wordData.correct =
+                        null;
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+        Randomize the order in which
+        wrong positions are processed.
+
+        The actual verse order stays the same,
+        but the wrong blank locations remain
+        determined by the original mistakes.
+    */
+
+    shuffleArray(wrongWords);
+
+
+    wrongWords.forEach(
+        item => {
+
+            const verse =
+                currentQuiz.find(
+                    v =>
+                        v.verse === item.verse
+                );
+
+
+            if (!verse) {
+                return;
+            }
+
+
+            const word =
+                verse.words[item.wordIndex];
+
+
+            if (!word) {
+                return;
+            }
+
+
+            word.blank =
+                true;
+
+            word.correct =
+                null;
+
+            word.userAnswer =
+                "";
+
+        }
+    );
+
+
+    /*
+        Render retest.
+    */
+
+    quizChecked = false;
+
+
+    renderQuiz();
+
+
+    document
+        .getElementById("scoreDisplay")
+        .textContent =
+            `Retest • ${wrongWords.length} blank${wrongWords.length === 1 ? "" : "s"}`;
+
+
+    document
+        .getElementById("quizHeading")
+        .textContent =
+            `Revelation ${currentChapter} — Retest`;
+
+
+    document
+        .getElementById("quizCard")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+}
+
+
+/*
+===========================================================
+    SHUFFLE ARRAY
+===========================================================
+*/
+
+function shuffleArray(array) {
+
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+
+        [
+            array[i],
+            array[j]
+        ] = [
+            array[j],
+            array[i]
+        ];
+    }
+
+
+    return array;
+}
+
+
+/*
+===========================================================
+    INITIALIZE
+===========================================================
+*/
+
+updateVerseLimits();
+
+</script>
+
+</body>
+</html>
+
