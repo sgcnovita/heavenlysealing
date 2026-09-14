@@ -1,0 +1,12 @@
+i will make a website through discord.
+it is a fill in the blank type of website related to Bible Revelation.
+1. The website should have dropdown to choose which version of Bible(only NIV1984 and NIV 2011)
+2. Website should have dropdown to choose which chapter they want to do.
+3. website should have dropdown to choose how many percentage is empty, and this will be reassign randomly everytime.
+4. all the verses should be listed separately. for example verse 1 one line, next verse is another line.
+5. there will be 2 empty box to fill which verse to which verse the user want to challenge, then only these verses will be listed.
+6. After answering the blank part, there will be check button by the end of the page and it will check the answer. The right one will be in green, and the wrong one will be in red.
+7. After checking there will be another button appear to retest but only the wrong part that are empty.
+8. For the marking criteria:
+- the answer should be checked word by word strictly, however there are these exception: God's can be Gods or God s. This apply to other similar form of word
+- all punctuation mistakes are allowed.
