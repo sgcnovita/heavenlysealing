@@ -317,39 +317,43 @@
 
         .blank-input {
             min-width: 180px;
-
-            max-width: 500px;
-
+        
+            max-width: 100%;
+        
             width: auto;
-
-            padding:
-                5px 9px;
-
-            margin:
-                0 3px;
-
+        
+            min-height: 38px;
+        
+            padding: 5px 9px;
+        
+            margin: 0 3px;
+        
             font-family: inherit;
-
+        
             font-size: 16px;
-
+        
             line-height: 1.5;
-
+        
             border:
                 2px solid #94a3b8;
-
+        
             border-radius: 6px;
-
+        
             outline: none;
-
+        
             background: white;
-
+        
+            resize: none;
+        
+            overflow: hidden;
+        
+            vertical-align: middle;
+        
             transition:
                 border-color 0.15s,
                 background 0.15s;
-
-            vertical-align: middle;
         }
-
+        
         .blank-input:focus {
             border-color: #2563eb;
 
@@ -1512,19 +1516,29 @@
 
                         const input =
                             document.createElement(
-                                "input"
+                                "textarea"
                             );
-
-
-                        input.type = "text";
-
+                        
+                        input.rows = 1;
+                        
                         input.className =
                             "blank-input";
-
-
+                        
+                        input.addEventListener(
+                            "input",
+                            function () {
+                        
+                                this.style.height = "auto";
+                        
+                                this.style.height =
+                                    this.scrollHeight + "px";
+                        
+                            }
+                        );
+                        
                         input.autocomplete =
                             "off";
-
+                        
                         input.spellcheck =
                             false;
 
