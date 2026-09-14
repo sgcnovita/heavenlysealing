@@ -792,13 +792,13 @@ function createQuiz(
 
     const quiz = [];
 
-
     /*
-        First collect all words.
+        ---------------------------------------------------
+        1. Collect all available words
+        ---------------------------------------------------
     */
 
     let totalWords = 0;
-
 
     for (
         let verse = fromVerse;
@@ -806,9 +806,7 @@ function createQuiz(
         verse++
     ) {
 
-        const text =
-            bibleData[chapter][verse];
-
+        const text = bibleData[chapter][verse];
 
         if (
             !text ||
@@ -817,48 +815,56 @@ function createQuiz(
             continue;
         }
 
-
-        const words =
-            tokenizeText(text);
-
+        const words = tokenizeText(text);
 
         totalWords += words.length;
     }
 
 
     /*
-        Calculate number of blanks.
-
-        At least one blank will be created
-        when there are words available.
+        ---------------------------------------------------
+        2. Calculate how many words should be hidden
+        ---------------------------------------------------
     */
 
-    let blankCount =
+    let targetBlankWords =
         Math.round(
-            totalWords *
-            percentage /
-            100
+            totalWords * percentage / 100
         );
 
 
     if (
-        totalWords > 0 &&
-        blankCount < 1
+        totalWords >= 2 &&
+        targetBlankWords < 2
     ) {
-        blankCount = 1;
+        targetBlankWords = 2;
     }
 
 
     /*
-        Generate random positions.
+        ---------------------------------------------------
+        3. Create possible multi-word blank groups
+        ---------------------------------------------------
 
-        Every eligible word gets an index.
+        Every blank must contain AT LEAST 2 words.
+
+        Example:
+
+        "I saw a great throne in heaven"
+
+        Possible blanks:
+
+        "I saw"
+        "saw a"
+        "a great"
+        "great throne"
+        "throne in"
+        "in heaven"
+
+        Longer groups are also possible.
     */
 
-    const positions = [];
-
-    let globalIndex = 0;
-
+    const allWords = [];
 
     for (
         let verse = fromVerse;
@@ -866,9 +872,7 @@ function createQuiz(
         verse++
     ) {
 
-        const text =
-            bibleData[chapter][verse];
-
+        const text = bibleData[chapter][verse];
 
         if (
             !text ||
@@ -877,50 +881,251 @@ function createQuiz(
             continue;
         }
 
-
-        const words =
-            tokenizeText(text);
-
+        const words = tokenizeText(text);
 
         words.forEach(
             (word, wordIndex) => {
 
-                positions.push({
+                allWords.push({
                     verse: verse,
                     wordIndex: wordIndex,
-                    globalIndex: globalIndex
+                    word: word
                 });
 
-                globalIndex++;
             }
         );
     }
 
 
     /*
-        Shuffle positions.
+        ---------------------------------------------------
+        4. Create random blank groups
+        ---------------------------------------------------
+
+        Each group contains 2 or more words.
+
+        We try to get close to the requested
+        percentage while making sure that every
+        blank contains multiple words.
     */
 
-    shuffleArray(positions);
+    const blankGroups = [];
+
+    let remainingWords = targetBlankWords;
 
 
     /*
-        Select blank positions.
+        Shuffle starting positions so the blank
+        locations are different every time.
     */
 
-    const selectedPositions =
-        new Set(
-            positions
-                .slice(0, blankCount)
-                .map(
-                    position =>
-                        `${position.verse}-${position.wordIndex}`
+    const possibleStarts = [];
+
+    for (
+        let i = 0;
+        i < allWords.length - 1;
+        i++
+    ) {
+        possibleStarts.push(i);
+    }
+
+    shuffleArray(possibleStarts);
+
+
+    /*
+        Track which words have already been
+        used in a blank.
+    */
+
+    const usedWords = new Set();
+
+
+    for (
+        let s = 0;
+        s < possibleStarts.length;
+        s++
+    ) {
+
+        if (remainingWords < 2) {
+            break;
+        }
+
+
+        const startIndex =
+            possibleStarts[s];
+
+        const startWord =
+            allWords[startIndex];
+
+
+        const startKey =
+            `${startWord.verse}-${startWord.wordIndex}`;
+
+
+        /*
+            Do not use a word that is already
+            part of another blank.
+        */
+
+        if (
+            usedWords.has(startKey)
+        ) {
+            continue;
+        }
+
+
+        /*
+            Find consecutive words in the
+            SAME VERSE.
+
+            This prevents a blank from crossing
+            from one verse into another.
+        */
+
+        const possibleLengths = [];
+
+
+        for (
+            let length = 2;
+            length <= Math.min(6, remainingWords);
+            length++
+        ) {
+
+            let valid = true;
+
+
+            for (
+                let i = 0;
+                i < length;
+                i++
+            ) {
+
+                const current =
+                    allWords[startIndex + i];
+
+
+                if (
+                    !current ||
+                    current.verse !== startWord.verse ||
+                    usedWords.has(
+                        `${current.verse}-${current.wordIndex}`
+                    )
+                ) {
+
+                    valid = false;
+                    break;
+                }
+
+            }
+
+
+            if (valid) {
+                possibleLengths.push(length);
+            }
+        }
+
+
+        /*
+            If we cannot make a multi-word blank
+            here, move to another location.
+        */
+
+        if (
+            possibleLengths.length === 0
+        ) {
+            continue;
+        }
+
+
+        /*
+            Randomly choose the blank length.
+
+            Prefer 2–4 words, with occasional
+            longer blanks.
+        */
+
+        const length =
+            possibleLengths[
+                Math.floor(
+                    Math.random() *
+                    possibleLengths.length
                 )
-        );
+            ];
+
+
+        const group = [];
+
+
+        for (
+            let i = 0;
+            i < length;
+            i++
+        ) {
+
+            const current =
+                allWords[startIndex + i];
+
+            group.push({
+                verse: current.verse,
+                wordIndex: current.wordIndex
+            });
+
+
+            usedWords.add(
+                `${current.verse}-${current.wordIndex}`
+            );
+
+        }
+
+
+        blankGroups.push(group);
+
+        remainingWords -= length;
+    }
 
 
     /*
-        Build quiz.
+        ---------------------------------------------------
+        5. If only 1 word remains, do NOT create a
+           one-word blank.
+
+           Instead, leave it visible.
+
+           This guarantees that EVERY blank has
+           at least 2 words.
+        ---------------------------------------------------
+    */
+
+
+    /*
+        ---------------------------------------------------
+        6. Convert blank groups into a lookup Set
+        ---------------------------------------------------
+    */
+
+    const blankLookup = new Set();
+
+    blankGroups.forEach(
+        group => {
+
+            group.forEach(
+                position => {
+
+                    blankLookup.add(
+                        `${position.verse}-${position.wordIndex}`
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+        ---------------------------------------------------
+        7. Build quiz data
+        ---------------------------------------------------
     */
 
     for (
@@ -929,9 +1134,7 @@ function createQuiz(
         verse++
     ) {
 
-        const text =
-            bibleData[chapter][verse];
-
+        const text = bibleData[chapter][verse];
 
         if (
             !text ||
@@ -941,8 +1144,7 @@ function createQuiz(
         }
 
 
-        const words =
-            tokenizeText(text);
+        const words = tokenizeText(text);
 
 
         const verseQuiz = {
@@ -955,7 +1157,7 @@ function createQuiz(
                     original: word,
 
                     blank:
-                        selectedPositions.has(
+                        blankLookup.has(
                             `${verse}-${index}`
                         ),
 
@@ -977,7 +1179,6 @@ function createQuiz(
 
     return quiz;
 }
-
 
 /*
 ===========================================================
@@ -1017,7 +1218,6 @@ function renderQuiz() {
     const content =
         document.getElementById("quizContent");
 
-
     content.innerHTML = "";
 
 
@@ -1039,7 +1239,6 @@ function renderQuiz() {
             const verseDiv =
                 document.createElement("div");
 
-
             verseDiv.className =
                 "verse";
 
@@ -1047,10 +1246,8 @@ function renderQuiz() {
             const verseNumber =
                 document.createElement("span");
 
-
             verseNumber.className =
                 "verse-number";
-
 
             verseNumber.textContent =
                 verseData.verse + ".";
@@ -1061,119 +1258,202 @@ function renderQuiz() {
             );
 
 
-            verseData.words.forEach(
-                (wordData, wordIndex) => {
+            let i = 0;
 
-                    if (
-                        wordData.blank
+
+            while (
+                i < verseData.words.length
+            ) {
+
+                const wordData =
+                    verseData.words[i];
+
+
+                /*
+                    ------------------------------------------------
+                    If this word is a blank, collect ALL consecutive
+                    blank words and make ONE input.
+                    ------------------------------------------------
+                */
+
+                if (wordData.blank) {
+
+                    const blankWords = [];
+
+                    let j = i;
+
+
+                    while (
+                        j < verseData.words.length &&
+                        verseData.words[j].blank
                     ) {
 
-                        const input =
-                            document.createElement("input");
-
-
-                        input.type = "text";
-
-                        input.className =
-                            "blank-input";
-
-
-                        input.dataset.verse =
-                            verseData.verse;
-
-
-                        input.dataset.wordIndex =
-                            wordIndex;
-
-
-                        /*
-                            Size the box based on
-                            original word length.
-                        */
-
-                        const cleanWord =
-                            removePunctuation(
-                                wordData.original
-                            );
-
-
-                        const width =
-                            Math.max(
-                                65,
-                                Math.min(
-                                    250,
-                                    cleanWord.length * 12 + 25
-                                )
-                            );
-
-
-                        input.style.width =
-                            width + "px";
-
-
-                        input.autocomplete =
-                            "off";
-
-
-                        input.spellcheck =
-                            false;
-
-
-                        input.addEventListener(
-                            "input",
-                            function () {
-
-                                wordData.userAnswer =
-                                    this.value;
-
-                                /*
-                                    If the user changes
-                                    an answer after an
-                                    unsuccessful check,
-                                    remove the old result
-                                    colour.
-                                */
-
-                                if (!quizChecked) {
-                                    this.classList.remove(
-                                        "correct",
-                                        "wrong",
-                                        "unanswered"
-                                    );
-                                }
-
-                            }
+                        blankWords.push(
+                            verseData.words[j]
                         );
 
+                        j++;
 
-                        verseDiv.appendChild(
-                            input
-                        );
-
-                    } else {
-
-                        /*
-                            Normal word.
-                        */
-
-                        const textNode =
-                            document.createTextNode(
-                                wordData.original + " "
-                            );
-
-
-                        verseDiv.appendChild(
-                            textNode
-                        );
                     }
 
+
+                    /*
+                        The correct answer is the entire
+                        multi-word phrase.
+                    */
+
+                    const correctPhrase =
+                        blankWords
+                            .map(
+                                word =>
+                                    word.original
+                            )
+                            .join(" ");
+
+
+                    /*
+                        Create one input for the entire phrase.
+                    */
+
+                    const input =
+                        document.createElement("input");
+
+
+                    input.type = "text";
+
+                    input.className =
+                        "blank-input";
+
+
+                    input.dataset.verse =
+                        verseData.verse;
+
+
+                    input.dataset.wordIndex =
+                        i;
+
+
+                    input.dataset.blankLength =
+                        blankWords.length;
+
+
+                    input.dataset.answer =
+                        correctPhrase;
+
+
+                    /*
+                        Make the input considerably wider
+                        because it contains multiple words.
+                    */
+
+                    const cleanPhrase =
+                        removePunctuation(
+                            correctPhrase
+                        );
+
+
+                    const width =
+                        Math.max(
+                            180,
+                            Math.min(
+                                500,
+                                cleanPhrase.length * 10 + 50
+                            )
+                        );
+
+
+                    input.style.width =
+                        width + "px";
+
+
+                    input.autocomplete =
+                        "off";
+
+
+                    input.spellcheck =
+                        false;
+
+
+                    /*
+                        Save the complete phrase.
+                    */
+
+                    input.addEventListener(
+                        "input",
+                        function () {
+
+                            const answer =
+                                this.value;
+
+
+                            /*
+                                Save answer to the first
+                                word of this blank.
+                            */
+
+                            verseData.words[i].userAnswer =
+                                answer;
+
+
+                            /*
+                                Clear previous result
+                                if the quiz hasn't been
+                                checked yet.
+                            */
+
+                            if (!quizChecked) {
+
+                                this.classList.remove(
+                                    "correct",
+                                    "wrong",
+                                    "unanswered"
+                                );
+
+                            }
+
+                        }
+                    );
+
+
+                    verseDiv.appendChild(
+                        input
+                    );
+
+
+                    /*
+                        Move past the entire blank group.
+                    */
+
+                    i = j;
+
+                } else {
+
+                    /*
+                        Normal visible word.
+                    */
+
+                    const textNode =
+                        document.createTextNode(
+                            wordData.original + " "
+                        );
+
+
+                    verseDiv.appendChild(
+                        textNode
+                    );
+
+
+                    i++;
+
                 }
-            );
+
+            }
 
 
             content.appendChild(
                 verseDiv
             );
+
         }
     );
 
@@ -1202,7 +1482,6 @@ function renderQuiz() {
         .style.display = "none";
 }
 
-
 /*
 ===========================================================
     CHECK ANSWERS
@@ -1218,92 +1497,168 @@ function checkAnswers() {
     let wrong = 0;
 
 
+    /*
+        Find every multi-word blank.
+    */
+
     currentQuiz.forEach(
         verseData => {
 
-            verseData.words.forEach(
-                wordData => {
-
-                    if (!wordData.blank) {
-                        return;
-                    }
+            let i = 0;
 
 
-                    total++;
+            while (
+                i < verseData.words.length
+            ) {
+
+                const wordData =
+                    verseData.words[i];
 
 
-                    /*
-                        Find input.
-                    */
+                if (!wordData.blank) {
 
-                    const input =
-                        document.querySelector(
-                            `.blank-input[data-verse="${verseData.verse}"][data-word-index="${verseData.words.indexOf(wordData)}"]`
-                        );
-
-
-                    if (!input) {
-                        return;
-                    }
-
-
-                    const userAnswer =
-                        input.value;
-
-
-                    wordData.userAnswer =
-                        userAnswer;
-
-
-                    /*
-                        Compare answers.
-                    */
-
-                    const isCorrect =
-                        wordsAreEquivalent(
-                            userAnswer,
-                            wordData.answer
-                        );
-
-
-                    wordData.correct =
-                        isCorrect;
-
-
-                    input.classList.remove(
-                        "correct",
-                        "wrong",
-                        "unanswered"
-                    );
-
-
-                    input.classList.add(
-                        isCorrect
-                            ? "correct"
-                            : "wrong"
-                    );
-
-
-                    input.classList.add(
-                        "checked"
-                    );
-
-
-                    input.readOnly = true;
-
-
-                    if (isCorrect) {
-
-                        correct++;
-
-                    } else {
-
-                        wrong++;
-
-                    }
+                    i++;
+                    continue;
 
                 }
-            );
+
+
+                /*
+                    Collect the complete blank.
+                */
+
+                const blankWords = [];
+
+                let j = i;
+
+
+                while (
+                    j < verseData.words.length &&
+                    verseData.words[j].blank
+                ) {
+
+                    blankWords.push(
+                        verseData.words[j]
+                    );
+
+                    j++;
+
+                }
+
+
+                /*
+                    One multi-word phrase = one question.
+                */
+
+                total++;
+
+
+                const input =
+                    document.querySelector(
+                        `.blank-input[data-verse="${verseData.verse}"][data-word-index="${i}"]`
+                    );
+
+
+                if (!input) {
+
+                    i = j;
+                    continue;
+
+                }
+
+
+                const userAnswer =
+                    input.value.trim();
+
+
+                const correctAnswer =
+                    blankWords
+                        .map(
+                            word =>
+                                word.original
+                        )
+                        .join(" ");
+
+
+                /*
+                    Save the user's answer to
+                    the first word of the blank.
+                */
+
+                verseData.words[i].userAnswer =
+                    userAnswer;
+
+
+                /*
+                    Compare the ENTIRE phrase.
+                */
+
+                const isCorrect =
+                    phraseIsEquivalent(
+                        userAnswer,
+                        correctAnswer
+                    );
+
+
+                /*
+                    Save result to every word
+                    belonging to this blank.
+                */
+
+                blankWords.forEach(
+                    wordData => {
+
+                        wordData.correct =
+                            isCorrect;
+
+                        wordData.userAnswer =
+                            userAnswer;
+
+                    }
+                );
+
+
+                input.classList.remove(
+                    "correct",
+                    "wrong",
+                    "unanswered"
+                );
+
+
+                input.classList.add(
+                    isCorrect
+                        ? "correct"
+                        : "wrong"
+                );
+
+
+                input.classList.add(
+                    "checked"
+                );
+
+
+                input.readOnly = true;
+
+
+                if (isCorrect) {
+
+                    correct++;
+
+                } else {
+
+                    wrong++;
+
+                }
+
+
+                /*
+                    Move to the next group.
+                */
+
+                i = j;
+
+            }
+
         }
     );
 
@@ -1312,7 +1667,8 @@ function checkAnswers() {
 
 
     /*
-        Calculate score.
+        Calculate score based on BLANK PHRASES,
+        not individual words.
     */
 
     const score =
@@ -1365,8 +1721,7 @@ function checkAnswers() {
 
 
     /*
-        Retest button only appears
-        if there are wrong answers.
+        Retest button.
     */
 
     if (wrong > 0) {
@@ -1380,11 +1735,12 @@ function checkAnswers() {
         document
             .getElementById("retestButton")
             .classList.add("hidden");
+
     }
 
 
     /*
-        Show new quiz button.
+        New quiz button.
     */
 
     document
@@ -1393,7 +1749,7 @@ function checkAnswers() {
 
 
     /*
-        Hide Check button after checking.
+        Hide Check button.
     */
 
     document
@@ -1405,7 +1761,6 @@ function checkAnswers() {
         behavior: "smooth"
     });
 }
-
 
 /*
 ===========================================================
@@ -1498,17 +1853,88 @@ function normalizeWord(word) {
 }
 
 
-function wordsAreEquivalent(
+function phraseIsEquivalent(
     userAnswer,
     correctAnswer
 ) {
 
-    return (
-        normalizeWord(userAnswer) ===
-        normalizeWord(correctAnswer)
-    );
-}
+    /*
+        Normalize the complete phrase.
 
+        This:
+        - ignores capitalization
+        - ignores punctuation
+        - accepts straight/curly apostrophes
+        - removes extra spaces
+    */
+
+    if (!userAnswer || !correctAnswer) {
+        return false;
+    }
+
+
+    const userWords =
+        userAnswer
+            .trim()
+            .split(/\s+/)
+            .map(word => normalizeWord(word))
+            .filter(word => word !== "");
+
+
+    const correctWords =
+        correctAnswer
+            .trim()
+            .split(/\s+/)
+            .map(word => normalizeWord(word))
+            .filter(word => word !== "");
+
+
+    /*
+        The number of words must match.
+
+        Therefore:
+
+        "throne in heaven"
+
+        is NOT accepted as:
+
+        "throne heaven"
+    */
+
+    if (
+        userWords.length !==
+        correctWords.length
+    ) {
+
+        return false;
+
+    }
+
+
+    /*
+        Compare each word.
+    */
+
+    for (
+        let i = 0;
+        i < correctWords.length;
+        i++
+    ) {
+
+        if (
+            userWords[i] !==
+            correctWords[i]
+        ) {
+
+            return false;
+
+        }
+
+    }
+
+
+    return true;
+}
 
 /*
 ===========================================================
@@ -1547,48 +1973,91 @@ function removePunctuation(word) {
 
 function retestWrongAnswers() {
 
-    const wrongWords = [];
+    const wrongGroups = [];
 
 
     /*
-        Collect wrong answers.
+        Find every previously wrong blank phrase.
     */
 
     currentQuiz.forEach(
         verseData => {
 
-            verseData.words.forEach(
-                (wordData, wordIndex) => {
+            let i = 0;
 
-                    if (
-                        wordData.blank &&
-                        wordData.correct === false
-                    ) {
 
-                        wrongWords.push({
+            while (
+                i < verseData.words.length
+            ) {
 
-                            verse:
-                                verseData.verse,
+                const wordData =
+                    verseData.words[i];
 
-                            wordIndex:
-                                wordIndex,
 
-                            original:
-                                wordData.original
+                if (
+                    !wordData.blank
+                ) {
 
-                        });
-
-                    }
+                    i++;
+                    continue;
 
                 }
-            );
+
+
+                const blankWords = [];
+
+                let j = i;
+
+
+                while (
+                    j < verseData.words.length &&
+                    verseData.words[j].blank
+                ) {
+
+                    blankWords.push(
+                        verseData.words[j]
+                    );
+
+                    j++;
+
+                }
+
+
+                /*
+                    If the first word is marked wrong,
+                    the entire phrase is wrong.
+                */
+
+                if (
+                    wordData.correct === false
+                ) {
+
+                    wrongGroups.push({
+
+                        verse:
+                            verseData.verse,
+
+                        startIndex:
+                            i,
+
+                        length:
+                            j - i
+
+                    });
+
+                }
+
+
+                i = j;
+
+            }
 
         }
     );
 
 
     if (
-        wrongWords.length === 0
+        wrongGroups.length === 0
     ) {
 
         alert(
@@ -1600,10 +2069,7 @@ function retestWrongAnswers() {
 
 
     /*
-        Remove previous quiz blanks.
-
-        Then make ONLY the wrong words
-        into blanks.
+        Clear all previous blanks.
     */
 
     currentQuiz.forEach(
@@ -1629,24 +2095,17 @@ function retestWrongAnswers() {
 
 
     /*
-        Randomize the order in which
-        wrong positions are processed.
-
-        The actual verse order stays the same,
-        but the wrong blank locations remain
-        determined by the original mistakes.
+        Restore ONLY the wrong multi-word
+        phrases as blanks.
     */
 
-    shuffleArray(wrongWords);
-
-
-    wrongWords.forEach(
-        item => {
+    wrongGroups.forEach(
+        group => {
 
             const verse =
                 currentQuiz.find(
                     v =>
-                        v.verse === item.verse
+                        v.verse === group.verse
                 );
 
 
@@ -1655,23 +2114,32 @@ function retestWrongAnswers() {
             }
 
 
-            const word =
-                verse.words[item.wordIndex];
+            for (
+                let i = 0;
+                i < group.length;
+                i++
+            ) {
+
+                const word =
+                    verse.words[
+                        group.startIndex + i
+                    ];
 
 
-            if (!word) {
-                return;
+                if (word) {
+
+                    word.blank =
+                        true;
+
+                    word.correct =
+                        null;
+
+                    word.userAnswer =
+                        "";
+
+                }
+
             }
-
-
-            word.blank =
-                true;
-
-            word.correct =
-                null;
-
-            word.userAnswer =
-                "";
 
         }
     );
@@ -1690,7 +2158,7 @@ function retestWrongAnswers() {
     document
         .getElementById("scoreDisplay")
         .textContent =
-            `Retest • ${wrongWords.length} blank${wrongWords.length === 1 ? "" : "s"}`;
+            `Retest • ${wrongGroups.length} blank${wrongGroups.length === 1 ? "" : "s"}`;
 
 
     document
@@ -1704,15 +2172,9 @@ function retestWrongAnswers() {
         .scrollIntoView({
             behavior: "smooth"
         });
+
 }
-
-
-/*
-===========================================================
-    SHUFFLE ARRAY
-===========================================================
-*/
-
+    
 function shuffleArray(array) {
 
     for (
