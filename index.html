@@ -1,249 +1,460 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Revelation Fill-in-the-Blank Quiz</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            padding: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
             background: #f4f8ff;
-            color: #222;
+            color: #1e293b;
         }
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
 
         .container {
+            width: 95%;
             max-width: 1100px;
+
             margin: 30px auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: #1f2937;
-            color: white;
             padding: 25px;
-            border-radius: 15px;
+
+            background: white;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
             text-align: center;
-            margin-bottom: 20px;
+
+            margin-bottom: 25px;
         }
 
-        .header h1 {
+        header h1 {
             margin: 0 0 8px;
+
             font-size: 30px;
+
+            color: #1e3a8a;
         }
 
-        .header p {
+        header p {
             margin: 0;
-            opacity: 0.85;
+
+            color: #64748b;
+
+            font-size: 15px;
         }
+
+
+        /* =========================
+           SETTINGS
+        ========================= */
 
         .settings {
-            background: white;
-            padding: 22px;
-            border-radius: 15px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .settings-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
             gap: 15px;
-            align-items: end;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #e2e8f0;
+
+            border-radius: 10px;
         }
 
-        .field {
+        .setting-group {
             display: flex;
+
             flex-direction: column;
+
+            gap: 6px;
         }
 
-        .field label {
+        .setting-group label {
+            font-size: 14px;
+
             font-weight: bold;
-            margin-bottom: 7px;
+
+            color: #334155;
         }
 
         select,
         input[type="number"] {
             width: 100%;
-            padding: 11px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+
+            padding: 10px 12px;
+
             font-size: 15px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
             background: white;
+
+            outline: none;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(37, 99, 235, 0.1);
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-area {
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin: 20px 0;
         }
 
         button {
             border: none;
-            border-radius: 8px;
-            padding: 12px 18px;
+
+            border-radius: 7px;
+
+            padding: 11px 20px;
+
             font-size: 15px;
+
             font-weight: bold;
+
             cursor: pointer;
-            transition: 0.2s;
+
+            transition:
+                transform 0.15s,
+                opacity 0.15s;
         }
 
         button:hover {
             transform: translateY(-1px);
+
+            opacity: 0.92;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+            transform: none;
         }
 
         .start-btn {
-        background: #2563eb;
-        color: white;
-    }
+            background: #2563eb;
+
+            color: white;
+        }
 
         .check-btn {
-        background: #16a34a;
-        color: white;
-    }
+            background: #16a34a;
 
-        .retest-btn {
-            background: #7c3aed;
             color: white;
         }
 
         .restart-btn {
             background: #475569;
+
             color: white;
         }
 
-        .quiz-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-            display: none;
+        .retest-btn {
+            background: #9333ea;
+
+            color: white;
         }
 
-        .quiz-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 15px;
+
+        /* =========================
+           INFORMATION BOX
+        ========================= */
+
+        .info-box {
             margin-bottom: 20px;
+
+            padding: 14px 16px;
+
+            background: #eff6ff;
+
+            border-left:
+                5px solid #2563eb;
+
+            border-radius: 8px;
+
+            line-height: 1.5;
+
+            font-size: 14px;
         }
 
-        .quiz-title h2 {
-            margin: 0;
+        .warning-box {
+            margin-bottom: 20px;
+
+            padding: 14px 16px;
+
+            background: #fff7ed;
+
+            border-left:
+                5px solid #f97316;
+
+            border-radius: 8px;
+
+            line-height: 1.5;
+
+            font-size: 14px;
         }
 
-        .score-display {
-            font-weight: bold;
+
+        /* =========================
+           QUIZ AREA
+        ========================= */
+
+        #quizArea {
+            margin-top: 20px;
         }
+
+        .chapter-title {
+            margin:
+                20px 0;
+
+            padding-bottom: 10px;
+
+            border-bottom:
+                2px solid #e2e8f0;
+
+            color: #1e3a8a;
+
+            font-size: 24px;
+        }
+
+
+        /* =========================
+           VERSES
+        ========================= */
 
         .verse {
-            margin-bottom: 18px;
-            line-height: 2;
+            margin-bottom: 16px;
+
             font-size: 17px;
+
+            line-height: 2;
+
+            color: #1f2937;
         }
 
         .verse-number {
-            font-weight: bold;
-            color: #2563eb;
+            display: inline-block;
+
             margin-right: 6px;
+
+            font-weight: bold;
+
+            color: #1e40af;
+
+            vertical-align: top;
         }
 
+
+        /* =========================
+           BLANK INPUT
+        ========================= */
+
         .blank-input {
-            display: inline-block;
-            vertical-align: middle;
             min-width: 180px;
-            width: 90px;
-            max-width: 100%;
-            height: 34px;
-            margin: 0 3px;
-            padding: 3px 7px;
-            border: 2px solid #94a3b8;
-            border-radius: 5px;
-            font-size: 16px;
+
+            max-width: 500px;
+
+            width: auto;
+
+            padding:
+                5px 9px;
+
+            margin:
+                0 3px;
+
             font-family: inherit;
-            background: #fff;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+
+            border:
+                2px solid #94a3b8;
+
+            border-radius: 6px;
+
+            outline: none;
+
+            background: white;
+
+            transition:
+                border-color 0.15s,
+                background 0.15s;
+
+            vertical-align: middle;
         }
 
         .blank-input:focus {
-            outline: none;
-            border-color: #253eb;
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(37, 99, 235, 0.1);
         }
 
-        /*
-         * Correct answer
-         */
         .blank-input.correct {
-            border-color: #1a34a;
-            background: #dcfce7;
-            color: #1534;
+            border-color: #16a34a;
+
+            color: #166534;
+
+            background: #f0fdf4;
         }
 
-        /*
-         * Wrong answer
-         */
         .blank-input.wrong {
-            border-color: #dc22;
-            background: #fee2e2;
+            border-color: #dc2626;
+
             color: #991b1b;
+
+            background: #fef2f2;
         }
 
-        /*
-         * Unanswered
-         */
         .blank-input.unanswered {
-            border-color: #dc22;
-            background: #fee2e2;
+            border-color: #dc2626;
+
+            background: #fef2f2;
         }
 
-        /*
-         * Once checked, inputs become readonly.
-         */
         .blank-input.checked {
             cursor: default;
         }
 
-        .wrong-answer-text {
-            color: #dc22;
-            font-size: 13px;
+
+        /* =========================
+           CORRECT ANSWER DISPLAY
+        ========================= */
+
+        .correct-answer-display {
+            display: inline-block;
+
+            color: #065f46;
+
+            background: #bbf7d0;
+
+            border:
+                2px solid #16a34a;
+
+            border-radius: 6px;
+
+            padding:
+                4px 10px;
+
+            margin-left: 8px;
+
+            margin-right: 8px;
+
+            font-size: 14px;
+
             font-weight: bold;
-            margin-left: 5px;
+
+            line-height: 1.5;
+
+            vertical-align: middle;
         }
 
-        .correct-answer-text {
-            color: #1a34a;
-            font-size: 13px;
-            font-weight: bold;
-            margin-left: 5px;
+        .correct-answer-display::before {
+            content: "✓ Correct: ";
+
+            color: #15803d;
         }
 
-        .button-area {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e5e7eb;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
 
-        .results {
-            display: none;
-            margin-top: 20px;
+        /* =========================
+           RESULT
+        ========================= */
+
+        #result {
+            margin-top: 25px;
+
             padding: 20px;
-            border-radius: 12px;
+
+            border-radius: 10px;
+
             background: #f8fafc;
-            border: 1px solid #cbd5e1;
+
+            border:
+                1px solid #e2e8f0;
+
+            text-align: center;
         }
 
-        .results h3 {
+        #result h2 {
             margin-top: 0;
+
+            color: #1e3a8a;
         }
 
-        .result-score {
-            font-size: 25px;
+        .score {
+            font-size: 24px;
+
             font-weight: bold;
+
+            margin-bottom: 10px;
         }
 
         .success {
@@ -251,2078 +462,2057 @@
         }
 
         .failure {
-            color: #dc22;
+            color: #dc2626;
         }
 
-        .info-box {
-            background: #effff;
-            border-left: 5px solid #253eb;
-            padding: 12px 15px;
-            border-radius: px;
-            margin-bottom: 20px;
-            line-height: 1.;
-        }
 
-        .warning-box {
-            background: #fff7ed;
-            border-left: 5px solid #f9731;
-            padding: 12px 15px;
-            border-radius: px;
-            margin-bottom: 20px;
-            line-height: 1.;
-        }
+        /* =========================
+           HIDDEN
+        ========================= */
 
         .hidden {
             display: none !important;
         }
 
+
+        /* =========================
+           MOBILE
+        ========================= */
+
         @media (max-width: 800px) {
-            .settings-grid {
-                grid-template-columns: 1fr 1fr;
+
+            .settings {
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
+
         }
 
+
         @media (max-width: 550px) {
+
             .container {
-                padding: 10px;
-                margin: 10px auto;
+                width: 100%;
+
+                margin: 0;
+
+                padding: 15px;
+
+                border-radius: 0;
+
+                box-shadow: none;
             }
 
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
+            header h1 {
                 font-size: 24px;
             }
 
-            .quiz-card {
+            .settings {
+                grid-template-columns: 1fr;
+
                 padding: 15px;
             }
 
             .verse {
                 font-size: 15px;
+
+                line-height: 2.1;
             }
 
-            .quiz-title {
-                flex-direction: column;
-                align-items: flex-start;
+            .blank-input {
+                min-width: 150px;
+
+                max-width: 100%;
+
+                font-size: 15px;
             }
+
             .correct-answer-display {
-                display: inline-block;
-                color: #065f46;
-                background: #bbf7d0;
-                border: 2px solid #16a34a;
-                border-radius: 6px;
-                padding: 4px 10px;
-                margin-left: 8px;
-                margin-right: 8px;
-                font-size: 14px;
-                font-weight: bold;
-                line-height: 1.5;
-                vertical-align: middle;
-            }
-            
-            .correct-answer-display::before {
-                content: "✓ Correct: ";
-                color: #15803d;
-            }
-            
-            .wrong-answer-label {
-                color: #dc22;
+                margin-top: 5px;
+
+                margin-bottom: 5px;
+
                 font-size: 13px;
-                font-weight: bold;
-                margin-left: 5px;
             }
+
+            .button-area {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
         }
+
     </style>
 </head>
 
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+        <header>
 
-    <div class="header">
-        <h1>📖 Revelation Fill-in-the-Blank Quiz</h1>
-        <p>NIV 2011 • Chapters 4–</p>
-    </div>
+            <h1>
+                Revelation Fill-in-the-Blank Quiz
+            </h1>
+
+            <p>
+                NIV 2011 • Chapters 4–6
+            </p>
+
+        </header>
 
 
-    <!-- =========================
-         SETTINGS
-    ========================== -->
+        <!-- =========================
+             SETTINGS
+        ========================= -->
 
-    <div class="settings">
+        <div class="settings">
 
-        <div class="info-box">
-            <strong>How to use:</strong><br>
-            Select a chapter, choose the percentage of words to hide,
-            select your verse range, and press <strong>Start Quiz</strong>.
-            The blank positions will be randomized each time.
-        </div>
+            <div class="setting-group">
 
-        <div class="settings-grid">
-
-            <div class="field">
                 <label for="chapterSelect">
                     Chapter
                 </label>
 
                 <select id="chapterSelect">
-                    <option value="4">Revelation 4</option>
-                    <option value="5">Revelation 5</option>
+
+                    <option value="4">
+                        Revelation 4
+                    </option>
+
+                    <option value="5">
+                        Revelation 5
+                    </option>
+
+                    <option value="6">
+                        Revelation 6
+                    </option>
+
                 </select>
+
             </div>
 
 
-            <div class="field">
+            <div class="setting-group">
+
                 <label for="percentageSelect">
                     Blank Percentage
                 </label>
 
                 <select id="percentageSelect">
-                    <option value="10">10%</option>
-                    <option value="20">20%</option>
-                    <option value="30" selected>30%</option>
-                    <option value="40">40%</option>
-                    <option value="50">50%</option>
-                    <option value="60">60%</option>
-                    <option value="70">70%</option>
-                    <option value="80">80%</option>
-                    <option value="90">90%</option>
+
+                    <option value="10">
+                        10%
+                    </option>
+
+                    <option value="20">
+                        20%
+                    </option>
+
+                    <option value="30" selected>
+                        30%
+                    </option>
+
+                    <option value="40">
+                        40%
+                    </option>
+
+                    <option value="50">
+                        50%
+                    </option>
+
+                    <option value="60">
+                        60%
+                    </option>
+
+                    <option value="70">
+                        70%
+                    </option>
+
+                    <option value="80">
+                        80%
+                    </option>
+
+                    <option value="90">
+                        90%
+                    </option>
+
                 </select>
+
             </div>
 
 
-            <div class="field">
-                <label for="fromVerse">
-                    From Verse
+            <div class="setting-group">
+
+                <label for="startVerse">
+                    Start Verse
                 </label>
 
                 <input
                     type="number"
-                    id="fromVerse"
+                    id="startVerse"
                     min="1"
                     value="1"
                 >
+
             </div>
 
 
-            <div class="field">
-                <label for="toVerse">
-                    To Verse
+            <div class="setting-group">
+
+                <label for="endVerse">
+                    End Verse
                 </label>
 
                 <input
                     type="number"
-                    id="toVerse"
+                    id="endVerse"
                     min="1"
-                    value="1"
+                    value="11"
                 >
-            </div>
 
-        </div>
-
-        <br>
-
-        <button
-            class="start-btn"
-            onclick="startQuiz()"
-        >
-            ▶ Start Quiz
-        </button>
-
-    </div>
-
-
-    <!-- =========================
-         QUIZ
-    ========================== -->
-
-    <div
-        id="quizCard"
-        class="quiz-card"
-    >
-
-        <div class="quiz-title">
-
-            <h2 id="quizHeading">
-                Revelation 4
-            </h2>
-
-            <div
-                id="scoreDisplay"
-                class="score-display"
-            >
-                Not checked
             </div>
 
         </div>
 
 
-        <div id="quizContent"></div>
+        <!-- =========================
+             INFORMATION
+        ========================= -->
 
+        <div class="info-box">
+
+            <strong>How to use:</strong>
+
+            Select a chapter and verse range,
+            choose how much text should be blank,
+            then click
+            <strong>Start Quiz</strong>.
+
+            Each blank contains at least
+            <strong>2 words</strong>.
+
+            Blank positions are randomized
+            whenever a new quiz starts.
+
+        </div>
+
+
+        <!-- =========================
+             WARNING
+        ========================= -->
+
+        <div
+            id="dataWarning"
+            class="warning-box hidden"
+        ></div>
+
+
+        <!-- =========================
+             BUTTONS
+        ========================= -->
 
         <div class="button-area">
 
             <button
-                id="checkButton"
-                class="check-btn"
-                onclick="checkAnswers()"
+                id="startBtn"
+                class="start-btn"
+                onclick="startQuiz()"
             >
-                ✓ Check Answers
+                Start Quiz
             </button>
 
+            <button
+                id="checkBtn"
+                class="check-btn hidden"
+                onclick="checkAnswers()"
+            >
+                Check Answers
+            </button>
 
             <button
-                id="retestButton"
+                id="retestBtn"
                 class="retest-btn hidden"
                 onclick="retestWrongAnswers()"
             >
-                🔄 Retest Wrong Answers
+                Retest Wrong Answers
             </button>
 
-
             <button
-                id="restartButton"
+                id="restartBtn"
                 class="restart-btn hidden"
                 onclick="startQuiz()"
             >
-                ↻ New Quiz
+                New Quiz
             </button>
 
         </div>
 
 
+        <!-- =========================
+             QUIZ
+        ========================= -->
+
+        <div id="quizArea"></div>
+
+
+        <!-- =========================
+             RESULT
+        ========================= -->
+
         <div
-            id="results"
-            class="results"
-        >
-            <h3>Quiz Result</h3>
-
-            <div
-                id="resultScore"
-                class="result-score"
-            >
-            </div>
-
-            <p id="resultDetails"></p>
-        </div>
+            id="result"
+            class="hidden"
+        ></div>
 
     </div>
 
-</div>
 
-
-<script>
-
-/*
-===========================================================
-    IMPORTANT
-===========================================================
-
-    PASTE YOUR LEGALLY OBTAINED NIV 2011 TEXT BELOW.
-
-    Format:
-
-    1: "Your verse 1 text here.",
-    2: "Your verse 2 text here.",
-    3: "Your verse 3 text here.",
-
-    Do this for Revelation 4, 5 and .
-
-===========================================================
-*/
-
-
-const bibleData = {
-
-    4: {
-
-        1: "After this I looked, and there before me was a door standing open in heaven. And the voice I had first heard speaking to me like a trumpet said, “Come up here, and I will show you what must take place after this.”",
-
-        2: "At once I was in the Spirit, and there before me was a throne in heaven with someone sitting on it.",
-
-        3: "And the one who sat there had the appearance of jasper and ruby. A rainbow that shone like an emerald encircled the throne.",
-
-        4: "Surrounding the throne were twenty-four other thrones, and seated on them were twenty-four elders. They were dressed in white and had crowns of gold on their heads.",
-
-        5: "From the throne came flashes of lightning, rumblings and peals of thunder. In front of the throne, seven lamps were blazing. These are the seven spirits of God.",
-
-        6: "Also in front of the throne there was what looked like a sea of glass, clear as crystal. \n In the center, around the throne, were four living creatures, and they were covered with eyes, in front and in back.",
-
-        7: "The first living creature was like a lion, the second was like an ox, the third had a face like a man, the fourth was like a flying eagle.",
-
-        8: "Each of the four living creatures had six wings and was covered with eyes all around, even under its wings. Day and night they never stop saying:\n“‘Holy, holy, holy\nis the Lord God Almighty,’\nwho was, and is, and is to come.”",
-
-        9: "Whenever the living creatures give glory, honor and thanks to him who sits on the throne and who lives for ever and ever,",
-
-        10: "the twenty-four elders fall down before him who sits on the throne and worship him who lives for ever and ever. They lay their crowns before the throne and say:",
-
-        11: "“You are worthy, our Lord and God,\nto receive glory and honor and power,\nfor you created all things,\nand by your will they were created\nand have their being.”"
-
-    },
-
-
-    5: {
-
-        1: "Then I saw in the right hand of him who sat on the throne a scroll with writing on both sides and sealed with seven seals.",
-
-        2: "And I saw a mighty angel proclaiming in a loud voice, “Who is worthy to break the seals and open the scroll?”",
-
-        3: "But no one in heaven or on earth or under the earth could open the scroll or even look inside it.",
-
-        4: "I wept and wept because no one was found who was worthy to open the scroll or look inside.",
-
-        5: "Then one of the elders said to me, “Do not weep! See, the Lion of the tribe of Judah, the Root of David, has triumphed. He is able to open the scroll and its seven seals.”",
-
-        6: "Then I saw a Lamb, looking as if it had been slain, standing at the center of the throne, encircled by the four living creatures and the elders. The Lamb had seven horns and seven eyes, which are the seven spirits of God sent out into all the earth.",
-
-        7: "He went and took the scroll from the right hand of him who sat on the throne.",
-
-        8: "And when he had taken it, the four living creatures and the twenty-four elders fell down before the Lamb. Each one had a harp and they were holding golden bowls full of incense, which are the prayers of God’s people.",
-
-        9: "And they sang a new song, saying:\n“You are worthy to take the scroll\nand to open its seals,\nbecause you were slain,\nand with your blood you purchased for God\npersons from every tribe and language and people and nation.",
-
-        10: "You have made them to be a kingdom and priests to serve our God,\nand they will reign on the earth.”",
-
-        11: "Then I looked and heard the voice of many angels, numbering thousands upon thousands, and ten thousand times ten thousand. They encircled the throne and the living creatures and the elders.",
-
-        12: "In a loud voice they were saying:\n“Worthy is the Lamb, who was slain,\nto receive power and wealth and wisdom and strength\nand honor and glory and praise!”",
-
-        13: "Then I heard every creature in heaven and on earth and under the earth and on the sea, and all that is in them, saying:\n“To him who sits on the throne and to the Lamb\nbe praise and honor and glory and power,\nfor ever and ever!”",
-
-        14: "The four living creatures said, “Amen,” and the elders fell down and worshiped."
-
-    },
-
-
-    6: {
-
-        1: "I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
-
-        2: "I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
-
-        3: "When the Lamb opened the second seal, I heard the second living creature say, “Come!”",
-
-        4: "Then another horse came out, a fiery red one. Its rider was given power to take peace from the earth and to make people kill each other. To him was given a large sword.",
-
-        5: "When the Lamb opened the third seal, I heard the third living creature say, “Come!” I looked, and there before me was a black horse! Its rider was holding a pair of scales in his hand.",
-
-        6: "Then I heard what sounded like a voice among the four living creatures, saying, “Two pounds of wheat for a day’s wages, and six pounds of barley for a day’s wages, and do not damage the oil and the wine!”",
-
-        7: "When the Lamb opened the fourth seal, I heard the voice of the fourth living creature say, “Come!”",
-
-        8: "PASTE NIV 2011 REVELATION :8 HERE",
-
-        9: "PASTE NIV 2011 REVELATION :9 HERE",
-
-        10: "PASTE NIV 2011 REVELATION :10 HERE",
-
-        11: "PASTE NIV 2011 REVELATION :11 HERE",
-
-        12: "PASTE NIV 2011 REVELATION :12 HERE",
-
-        13: "PASTE NIV 2011 REVELATION :13 HERE",
-
-        14: "PASTE NIV 2011 REVELATION :14 HERE",
-
-        15: "PASTE NIV 2011 REVELATION :15 HERE",
-
-        1: "PASTE NIV 2011 REVELATION :1 HERE",
-
-        17: "PASTE NIV 2011 REVELATION :17 HERE"
-
-    }
-
-};
-
-
-/*
-===========================================================
-    GLOBAL VARIABLES
-===========================================================
-*/
-
-let currentChapter = null;
-
-let currentFromVerse = null;
-
-let currentToVerse = null;
-
-let currentPercentage = null;
-
-let currentQuiz = [];
-
-let quizChecked = false;
-
-
-/*
-===========================================================
-    INITIALIZE VERSE LIMITS
-===========================================================
-*/
-
-document
-    .getElementById("chapterSelect")
-    .addEventListener("change", updateVerseLimits);
-
-
-function updateVerseLimits() {
-
-    const chapter =
-        Number(
-            document.getElementById("chapterSelect").value
-        );
-
-    const verses =
-        Object.keys(bibleData[chapter])
-            .map(Number);
-
-    const maxVerse =
-        Math.max(...verses);
-
-
-    const fromInput =
-        document.getElementById("fromVerse");
-
-    const toInput =
-        document.getElementById("toVerse");
-
-
-    fromInput.max = maxVerse;
-
-    toInput.max = maxVerse;
-
-
-    fromInput.value = 1;
-
-    toInput.value = maxVerse;
-}
-
-
-/*
-===========================================================
-    START QUIZ
-===========================================================
-*/
-
-function startQuiz() {
-
-    currentChapter =
-        Number(
-            document.getElementById("chapterSelect").value
-        );
-
-    currentFromVerse =
-        Number(
-            document.getElementById("fromVerse").value
-        );
-
-    currentToVerse =
-        Number(
-            document.getElementById("toVerse").value
-        );
-
-    currentPercentage =
-        Number(
-            document.getElementById("percentageSelect").value
-        );
-
-
-    const chapterData =
-        bibleData[currentChapter];
-
-
-    const availableVerses =
-        Object.keys(chapterData)
-            .map(Number)
-            .sort((a, b) => a - b);
-
-
-    const maxVerse =
-        Math.max(...availableVerses);
-
-
-    /*
-        Validate verse range.
-    */
-
-    if (
-        currentFromVerse < 1 ||
-        currentToVerse > maxVerse ||
-        currentFromVerse > currentToVerse
-    ) {
-
-        alert(
-            `Please enter a valid verse range from 1 to ${maxVerse}.`
-        );
-
-        return;
-    }
-
-
-    /*
-        Create quiz.
-    */
-
-    currentQuiz =
-        createQuiz(
-            currentChapter,
-            currentFromVerse,
-            currentToVerse,
-            currentPercentage
-        );
-
-
-    quizChecked = false;
-
-
-    renderQuiz();
-
-
-    /*
-        Show quiz.
-    */
-
-    document
-        .getElementById("quizCard")
-        .style.display = "block";
-
-
-    document
-        .getElementById("quizCard")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-}
-
-
-/*
-===========================================================
-    CREATE QUIZ
-===========================================================
-*/
-
-function createQuiz(
-    chapter,
-    fromVerse,
-    toVerse,
-    percentage
-) {
-
-    const quiz = [];
-
-    /*
-        ---------------------------------------------------
-        1. Collect all available words
-        ---------------------------------------------------
-    */
-
-    let totalWords = 0;
-
-    for (
-        let verse = fromVerse;
-        verse <= toVerse;
-        verse++
-    ) {
-
-        const text = bibleData[chapter][verse];
-
-        if (
-            !text ||
-            text.startsWith("PASTE NIV")
-        ) {
-            continue;
-        }
-
-        const words = tokenizeText(text);
-
-        totalWords += words.length;
-    }
-
-
-    /*
-        ---------------------------------------------------
-        2. Calculate how many words should be hidden
-        ---------------------------------------------------
-    */
-
-    let targetBlankWords =
-        Math.round(
-            totalWords * percentage / 100
-        );
-
-
-    if (
-        totalWords >= 2 &&
-        targetBlankWords < 2
-    ) {
-        targetBlankWords = 2;
-    }
-
-
-    /*
-        ---------------------------------------------------
-        3. Create possible multi-word blank groups
-        ---------------------------------------------------
-
-        Every blank must contain AT LEAST 2 words.
-
-        Example:
-
-        "I saw a great throne in heaven"
-
-        Possible blanks:
-
-        "I saw"
-        "saw a"
-        "a great"
-        "great throne"
-        "throne in"
-        "in heaven"
-
-        Longer groups are also possible.
-    */
-
-    const allWords = [];
-
-    for (
-        let verse = fromVerse;
-        verse <= toVerse;
-        verse++
-    ) {
-
-        const text = bibleData[chapter][verse];
-
-        if (
-            !text ||
-            text.startsWith("PASTE NIV")
-        ) {
-            continue;
-        }
-
-        const words = tokenizeText(text);
-
-        words.forEach(
-            (word, wordIndex) => {
-
-                allWords.push({
-                    verse: verse,
-                    wordIndex: wordIndex,
-                    word: word
-                });
+    <script>
+
+        /* =========================================================
+           BIBLE DATA
+           
+           Paste your own NIV 2011 verse text here.
+
+           Example:
+
+           1: "Your verse text here",
+           2: "Your verse text here",
+
+           Keep each verse as one string.
+        ========================================================= */
+
+
+        const bibleData = {
+
+            4: {
+        
+                1: "After this I looked, and there before me was a door standing open in heaven. And the voice I had first heard speaking to me like a trumpet said, “Come up here, and I will show you what must take place after this.”",
+        
+                2: "At once I was in the Spirit, and there before me was a throne in heaven with someone sitting on it.",
+        
+                3: "And the one who sat there had the appearance of jasper and ruby. A rainbow that shone like an emerald encircled the throne.",
+        
+                4: "Surrounding the throne were twenty-four other thrones, and seated on them were twenty-four elders. They were dressed in white and had crowns of gold on their heads.",
+        
+                5: "From the throne came flashes of lightning, rumblings and peals of thunder. In front of the throne, seven lamps were blazing. These are the seven spirits of God.",
+        
+                6: "Also in front of the throne there was what looked like a sea of glass, clear as crystal. \n In the center, around the throne, were four living creatures, and they were covered with eyes, in front and in back.",
+        
+                7: "The first living creature was like a lion, the second was like an ox, the third had a face like a man, the fourth was like a flying eagle.",
+        
+                8: "Each of the four living creatures had six wings and was covered with eyes all around, even under its wings. Day and night they never stop saying:\n“‘Holy, holy, holy\nis the Lord God Almighty,’\nwho was, and is, and is to come.”",
+        
+                9: "Whenever the living creatures give glory, honor and thanks to him who sits on the throne and who lives for ever and ever,",
+        
+                10: "the twenty-four elders fall down before him who sits on the throne and worship him who lives for ever and ever. They lay their crowns before the throne and say:",
+        
+                11: "“You are worthy, our Lord and God,\nto receive glory and honor and power,\nfor you created all things,\nand by your will they were created\nand have their being.”"
+        
+            },
+        
+        
+            5: {
+        
+                1: "Then I saw in the right hand of him who sat on the throne a scroll with writing on both sides and sealed with seven seals.",
+        
+                2: "And I saw a mighty angel proclaiming in a loud voice, “Who is worthy to break the seals and open the scroll?”",
+        
+                3: "But no one in heaven or on earth or under the earth could open the scroll or even look inside it.",
+        
+                4: "I wept and wept because no one was found who was worthy to open the scroll or look inside.",
+        
+                5: "Then one of the elders said to me, “Do not weep! See, the Lion of the tribe of Judah, the Root of David, has triumphed. He is able to open the scroll and its seven seals.”",
+        
+                6: "Then I saw a Lamb, looking as if it had been slain, standing at the center of the throne, encircled by the four living creatures and the elders. The Lamb had seven horns and seven eyes, which are the seven spirits of God sent out into all the earth.",
+        
+                7: "He went and took the scroll from the right hand of him who sat on the throne.",
+        
+                8: "And when he had taken it, the four living creatures and the twenty-four elders fell down before the Lamb. Each one had a harp and they were holding golden bowls full of incense, which are the prayers of God’s people.",
+        
+                9: "And they sang a new song, saying:\n“You are worthy to take the scroll\nand to open its seals,\nbecause you were slain,\nand with your blood you purchased for God\npersons from every tribe and language and people and nation.",
+        
+                10: "You have made them to be a kingdom and priests to serve our God,\nand they will reign on the earth.”",
+        
+                11: "Then I looked and heard the voice of many angels, numbering thousands upon thousands, and ten thousand times ten thousand. They encircled the throne and the living creatures and the elders.",
+        
+                12: "In a loud voice they were saying:\n“Worthy is the Lamb, who was slain,\nto receive power and wealth and wisdom and strength\nand honor and glory and praise!”",
+        
+                13: "Then I heard every creature in heaven and on earth and under the earth and on the sea, and all that is in them, saying:\n“To him who sits on the throne and to the Lamb\nbe praise and honor and glory and power,\nfor ever and ever!”",
+        
+                14: "The four living creatures said, “Amen,” and the elders fell down and worshiped."
+        
+            },
+        
+        
+            6: {
+        
+                1: "I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
+        
+                2: "I watched as the Lamb opened the first of the seven seals. Then I heard one of the four living creatures say in a voice like thunder, “Come!”",
+        
+                3: "When the Lamb opened the second seal, I heard the second living creature say, “Come!”",
+        
+                4: "Then another horse came out, a fiery red one. Its rider was given power to take peace from the earth and to make people kill each other. To him was given a large sword.",
+        
+                5: "When the Lamb opened the third seal, I heard the third living creature say, “Come!” I looked, and there before me was a black horse! Its rider was holding a pair of scales in his hand.",
+        
+                6: "Then I heard what sounded like a voice among the four living creatures, saying, “Two pounds of wheat for a day’s wages, and six pounds of barley for a day’s wages, and do not damage the oil and the wine!”",
+        
+                7: "When the Lamb opened the fourth seal, I heard the voice of the fourth living creature say, “Come!”",
+        
+                8: "PASTE NIV 2011 REVELATION :8 HERE",
+        
+                9: "PASTE NIV 2011 REVELATION :9 HERE",
+        
+                10: "PASTE NIV 2011 REVELATION :10 HERE",
+        
+                11: "PASTE NIV 2011 REVELATION :11 HERE",
+        
+                12: "PASTE NIV 2011 REVELATION :12 HERE",
+        
+                13: "PASTE NIV 2011 REVELATION :13 HERE",
+        
+                14: "PASTE NIV 2011 REVELATION :14 HERE",
+        
+                15: "PASTE NIV 2011 REVELATION :15 HERE",
+        
+                1: "PASTE NIV 2011 REVELATION :1 HERE",
+        
+                17: "PASTE NIV 2011 REVELATION :17 HERE"
+        
+            }
+        
+        };
+
+
+        /* =========================================================
+           GLOBAL VARIABLES
+        ========================================================= */
+
+        let currentChapter = null;
+
+        let currentStartVerse = 1;
+
+        let currentEndVerse = 1;
+
+        let currentPercentage = 30;
+
+        let quizChecked = false;
+
+
+        /* =========================================================
+           HELPER FUNCTIONS
+        ========================================================= */
+
+        function shuffle(array) {
+
+            const result = [...array];
+
+            for (
+                let i = result.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() * (i + 1)
+                    );
+
+                [
+                    result[i],
+                    result[j]
+                ] =
+                [
+                    result[j],
+                    result[i]
+                ];
 
             }
-        );
-    }
 
-
-    /*
-        ---------------------------------------------------
-        4. Create random blank groups
-        ---------------------------------------------------
-
-        Each group contains 2 or more words.
-
-        We try to get close to the requested
-        percentage while making sure that every
-        blank contains multiple words.
-    */
-
-    const blankGroups = [];
-
-    let remainingWords = targetBlankWords;
-
-
-    /*
-        Shuffle starting positions so the blank
-        locations are different every time.
-    */
-
-    const possibleStarts = [];
-
-    for (
-        let i = 0;
-        i < allWords.length - 1;
-        i++
-    ) {
-        possibleStarts.push(i);
-    }
-
-    shuffleArray(possibleStarts);
-
-
-    /*
-        Track which words have already been
-        used in a blank.
-    */
-
-    const usedWords = new Set();
-
-
-    for (
-        let s = 0;
-        s < possibleStarts.length;
-        s++
-    ) {
-
-        if (remainingWords < 2) {
-            break;
+            return result;
         }
 
 
-        const startIndex =
-            possibleStarts[s];
+        function normalizeWord(word) {
 
-        const startWord =
-            allWords[startIndex];
+            return word
+                .toLowerCase()
+                .trim()
+                .replace(
+                    /[^\p{L}\p{N}']/gu,
+                    ""
+                )
+                .replace(
+                    /\s+/g,
+                    ""
+                );
 
-
-        const startKey =
-            `${startWord.verse}-${startWord.wordIndex}`;
-
-
-        /*
-            Do not use a word that is already
-            part of another blank.
-        */
-
-        if (
-            usedWords.has(startKey)
-        ) {
-            continue;
         }
 
 
-        /*
-            Find consecutive words in the
-            SAME VERSE.
-
-            This prevents a blank from crossing
-            from one verse into another.
-        */
-
-        const possibleLengths = [];
-
-
-        for (
-            let length = 2;
-            length <= Math.min(6, remainingWords);
-            length++
+        function phraseIsEquivalent(
+            userAnswer,
+            correctAnswer
         ) {
 
-            let valid = true;
+            const userWords =
+                userAnswer
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean);
+
+            const correctWords =
+                correctAnswer
+                    .trim()
+                    .split(/\s+/)
+                    .filter(Boolean);
+
+
+            if (
+                userWords.length !==
+                correctWords.length
+            ) {
+
+                return false;
+
+            }
 
 
             for (
                 let i = 0;
-                i < length;
+                i < correctWords.length;
                 i++
             ) {
 
-                const current =
-                    allWords[startIndex + i];
-
-
                 if (
-                    !current ||
-                    current.verse !== startWord.verse ||
-                    usedWords.has(
-                        `${current.verse}-${current.wordIndex}`
+                    normalizeWord(
+                        userWords[i]
+                    ) !==
+                    normalizeWord(
+                        correctWords[i]
                     )
                 ) {
 
-                    valid = false;
-                    break;
+                    return false;
+
                 }
 
             }
 
 
-            if (valid) {
-                possibleLengths.push(length);
-            }
-        }
-
-
-        /*
-            If we cannot make a multi-word blank
-            here, move to another location.
-        */
-
-        if (
-            possibleLengths.length === 0
-        ) {
-            continue;
-        }
-
-
-        /*
-            Randomly choose the blank length.
-
-            Prefer 2–4 words, with occasional
-            longer blanks.
-        */
-
-        const length =
-            possibleLengths[
-                Math.floor(
-                    Math.random() *
-                    possibleLengths.length
-                )
-            ];
-
-
-        const group = [];
-
-
-        for (
-            let i = 0;
-            i < length;
-            i++
-        ) {
-
-            const current =
-                allWords[startIndex + i];
-
-            group.push({
-                verse: current.verse,
-                wordIndex: current.wordIndex
-            });
-
-
-            usedWords.add(
-                `${current.verse}-${current.wordIndex}`
-            );
+            return true;
 
         }
 
 
-        blankGroups.push(group);
+        function escapeHTML(text) {
 
-        remainingWords -= length;
-    }
-
-
-    /*
-        ---------------------------------------------------
-        5. If only 1 word remains, do NOT create a
-           one-word blank.
-
-           Instead, leave it visible.
-
-           This guarantees that EVERY blank has
-           at least 2 words.
-        ---------------------------------------------------
-    */
-
-
-    /*
-        ---------------------------------------------------
-        . Convert blank groups into a lookup Set
-        ---------------------------------------------------
-    */
-
-    const blankLookup = new Set();
-
-    blankGroups.forEach(
-        group => {
-
-            group.forEach(
-                position => {
-
-                    blankLookup.add(
-                        `${position.verse}-${position.wordIndex}`
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-    /*
-        ---------------------------------------------------
-        7. Build quiz data
-        ---------------------------------------------------
-    */
-
-    for (
-        let verse = fromVerse;
-        verse <= toVerse;
-        verse++
-    ) {
-
-        const text = bibleData[chapter][verse];
-
-        if (
-            !text ||
-            text.startsWith("PASTE NIV")
-        ) {
-            continue;
-        }
-
-
-        const words = tokenizeText(text);
-
-
-        const verseQuiz = {
-
-            verse: verse,
-
-            words: words.map(
-                (word, index) => ({
-
-                    original: word,
-
-                    blank:
-                        blankLookup.has(
-                            `${verse}-${index}`
-                        ),
-
-                    answer: word,
-
-                    userAnswer: "",
-
-                    correct: null
-
-                })
-            )
-
-        };
-
-
-        quiz.push(verseQuiz);
-    }
-
-
-    return quiz;
-}
-
-/*
-===========================================================
-    TOKENIZE TEXT
-===========================================================
-
-    We keep punctuation attached to words visually.
-
-    Example:
-
-    "throne,"
-    
-    remains:
-
-    "throne,"
-
-    However, punctuation will be ignored during marking.
-===========================================================
-*/
-
-function tokenizeText(text) {
-
-    return text
-        .trim()
-        .split(/\s+/);
-}
-
-
-/*
-===========================================================
-    RENDER QUIZ
-===========================================================
-*/
-
-function renderQuiz() {
-
-    const content =
-        document.getElementById("quizContent");
-
-    content.innerHTML = "";
-
-
-    document
-        .getElementById("quizHeading")
-        .textContent =
-            `Revelation ${currentChapter}`;
-
-
-    document
-        .getElementById("scoreDisplay")
-        .textContent =
-            `${currentFromVerse}:${currentToVerse} • ${currentPercentage}% blanks`;
-
-
-    currentQuiz.forEach(
-        verseData => {
-
-            const verseDiv =
+            const div =
                 document.createElement("div");
 
-            verseDiv.className =
-                "verse";
+            div.textContent = text;
+
+            return div.innerHTML;
+
+        }
 
 
-            const verseNumber =
-                document.createElement("span");
+        /* =========================================================
+           GET VALID VERSES
+        ========================================================= */
 
-            verseNumber.className =
-                "verse-number";
+        function getSelectedVerses() {
 
-            verseNumber.textContent =
-                verseData.verse + ".";
+            const data =
+                bibleData[currentChapter];
 
+            const verses = [];
 
-            verseDiv.appendChild(
-                verseNumber
-            );
+            for (
+                let verse =
+                    currentStartVerse;
 
+                verse <= currentEndVerse;
 
-            let i = 0;
-
-
-            while (
-                i < verseData.words.length
+                verse++
             ) {
 
-                const wordData =
-                    verseData.words[i];
+                if (
+                    data &&
+                    data[verse] &&
+                    data[verse].trim() !== ""
+                ) {
+
+                    verses.push({
+                        verse: verse,
+                        text: data[verse]
+                    });
+
+                }
+
+            }
+
+            return verses;
+
+        }
 
 
-                /*
-                    ------------------------------------------------
-                    If this word is a blank, collect ALL consecutive
-                    blank words and make ONE input.
-                    ------------------------------------------------
-                */
+        /* =========================================================
+           CREATE QUIZ
+        ========================================================= */
 
-                if (wordData.blank) {
+        function createQuiz(verses) {
 
-                    const blankWords = [];
+            const allWords = [];
 
-                    let j = i;
+            let totalWords = 0;
 
 
-                    while (
-                        j < verseData.words.length &&
-                        verseData.words[j].blank
-                    ) {
+            /*
+                Split every verse into words.
+            */
 
-                        blankWords.push(
-                            verseData.words[j]
-                        );
+            verses.forEach(
+                verseData => {
 
-                        j++;
-
-                    }
-
-
-                    /*
-                        The correct answer is the entire
-                        multi-word phrase.
-                    */
-
-                    const correctPhrase =
-                        blankWords
-                            .map(
-                                word =>
-                                    word.original
-                            )
-                            .join(" ");
+                    const words =
+                        verseData.text
+                            .trim()
+                            .split(/\s+/);
 
 
-                    /*
-                        Create one input for the entire phrase.
-                    */
-
-                    const input =
-                        document.createElement("input");
-
-
-                    input.type = "text";
-
-                    input.className =
-                        "blank-input";
-
-
-                    input.dataset.verse =
-                        verseData.verse;
-
-
-                    input.dataset.wordIndex =
-                        i;
-
-
-                    input.dataset.blankLength =
-                        blankWords.length;
-
-
-                    input.dataset.answer =
-                        correctPhrase;
-
-
-                    /*
-                        Make the input considerably wider
-                        because it contains multiple words.
-                    */
-
-                    const cleanPhrase =
-                        removePunctuation(
-                            correctPhrase
+                    verseData.words =
+                        words.map(
+                            word => ({
+                                text: word,
+                                blank: false,
+                                userAnswer: "",
+                                correct: null
+                            })
                         );
 
 
-                    const width =
-                        Math.max(
-                            180,
-                            Math.min(
-                                500,
-                                cleanPhrase.length * 10 + 50
-                            )
-                        );
+                    totalWords +=
+                        verseData.words.length;
 
 
-                    input.style.width =
-                        width + "px";
+                    verseData.words.forEach(
+                        (word, index) => {
 
+                            allWords.push({
 
-                    input.autocomplete =
-                        "off";
+                                verse:
+                                    verseData.verse,
 
+                                index: index
 
-                    input.spellcheck =
-                        false;
-
-
-                    /*
-                        Save the complete phrase.
-                    */
-
-                    input.addEventListener(
-                        "input",
-                        function () {
-
-                            const answer =
-                                this.value;
-
-
-                            /*
-                                Save answer to the first
-                                word of this blank.
-                            */
-
-                            verseData.words[i].userAnswer =
-                                answer;
-
-
-                            /*
-                                Clear previous result
-                                if the quiz hasn't been
-                                checked yet.
-                            */
-
-                            if (!quizChecked) {
-
-                                this.classList.remove(
-                                    "correct",
-                                    "wrong",
-                                    "unanswered"
-                                );
-
-                            }
+                            });
 
                         }
                     );
 
+                }
+            );
 
-                    verseDiv.appendChild(
-                        input
+
+            /*
+                Calculate approximate number
+                of words to hide.
+            */
+
+            let targetBlankWords =
+                Math.round(
+                    totalWords *
+                    currentPercentage /
+                    100
+                );
+
+
+            /*
+                Make sure a blank contains
+                at least 2 words.
+            */
+
+            if (
+                totalWords >= 2 &&
+                targetBlankWords < 2
+            ) {
+
+                targetBlankWords = 2;
+
+            }
+
+
+            /*
+                Shuffle possible blank starts.
+            */
+
+            const possibleStarts =
+                shuffle(allWords);
+
+
+            let blankWordsCreated = 0;
+
+
+            /*
+                Create multi-word blanks.
+            */
+
+            for (
+                const start of possibleStarts
+            ) {
+
+                if (
+                    blankWordsCreated >=
+                    targetBlankWords
+                ) {
+
+                    break;
+
+                }
+
+
+                const verseData =
+                    verses.find(
+                        v =>
+                            v.verse ===
+                            start.verse
                     );
 
 
-                    /*
-                        Move past the entire blank group.
-                    */
+                if (!verseData) {
+                    continue;
+                }
 
-                    i = j;
 
-                } else {
+                const remainingWords =
+                    verseData.words.length -
+                    start.index;
 
-                    /*
-                        Normal visible word.
-                    */
 
-                    const textNode =
-                        document.createTextNode(
-                            wordData.original + " "
+                /*
+                    Every blank must contain
+                    at least 2 words.
+                */
+
+                if (
+                    remainingWords < 2
+                ) {
+
+                    continue;
+
+                }
+
+
+                /*
+                    Check whether this start
+                    is already inside a blank.
+                */
+
+                let alreadyBlank = false;
+
+                for (
+                    let j = start.index;
+                    j < verseData.words.length &&
+                    j < start.index + 6;
+                    j++
+                ) {
+
+                    if (
+                        verseData.words[j].blank
+                    ) {
+
+                        alreadyBlank = true;
+
+                        break;
+
+                    }
+
+                }
+
+
+                if (alreadyBlank) {
+                    continue;
+                }
+
+
+                /*
+                    Desired blank size:
+                    2–6 words.
+                */
+
+                let maxLength =
+                    Math.min(
+                        6,
+                        remainingWords
+                    );
+
+
+                /*
+                    Do not create a blank
+                    larger than the remaining
+                    target.
+                */
+
+                maxLength =
+                    Math.min(
+                        maxLength,
+                        targetBlankWords -
+                        blankWordsCreated
+                    );
+
+
+                if (
+                    maxLength < 2
+                ) {
+
+                    continue;
+
+                }
+
+
+                let blankLength =
+                    Math.floor(
+                        Math.random() *
+                        (maxLength - 1)
+                    ) + 2;
+
+
+                /*
+                    If only 2 words remain
+                    in the target, use 2.
+                */
+
+                if (
+                    targetBlankWords -
+                    blankWordsCreated <= 2
+                ) {
+
+                    blankLength = 2;
+
+                }
+
+
+                /*
+                    Mark the words blank.
+                */
+
+                for (
+                    let j = start.index;
+                    j < start.index + blankLength;
+                    j++
+                ) {
+
+                    verseData.words[j].blank = true;
+
+                }
+
+
+                blankWordsCreated +=
+                    blankLength;
+
+            }
+
+
+            return verses;
+
+        }
+
+
+        /* =========================================================
+           RENDER QUIZ
+        ========================================================= */
+
+        function renderQuiz(verses) {
+
+            const quizArea =
+                document.getElementById(
+                    "quizArea"
+                );
+
+
+            quizArea.innerHTML = "";
+
+
+            const heading =
+                document.createElement("h2");
+
+            heading.className =
+                "chapter-title";
+
+            heading.textContent =
+                `Revelation ${currentChapter}`;
+
+            quizArea.appendChild(
+                heading
+            );
+
+
+            verses.forEach(
+                verseData => {
+
+                    const verseElement =
+                        document.createElement("div");
+
+                    verseElement.className =
+                        "verse";
+
+
+                    const verseNumber =
+                        document.createElement("span");
+
+                    verseNumber.className =
+                        "verse-number";
+
+                    verseNumber.textContent =
+                        `${verseData.verse}.`;
+
+                    verseElement.appendChild(
+                        verseNumber
+                    );
+
+
+                    let i = 0;
+
+
+                    while (
+                        i <
+                        verseData.words.length
+                    ) {
+
+                        const word =
+                            verseData.words[i];
+
+
+                        /*
+                            Visible word.
+                        */
+
+                        if (!word.blank) {
+
+                            verseElement.appendChild(
+                                document.createTextNode(
+                                    word.text + " "
+                                )
+                            );
+
+                            i++;
+
+                            continue;
+
+                        }
+
+
+                        /*
+                            Find the complete
+                            consecutive blank.
+                        */
+
+                        const blankStartIndex =
+                            i;
+
+
+                        let blankWords = [];
+
+
+                        while (
+                            i <
+                            verseData.words.length &&
+                            verseData.words[i].blank
+                        ) {
+
+                            blankWords.push(
+                                verseData.words[i].text
+                            );
+
+                            i++;
+
+                        }
+
+
+                        const correctPhrase =
+                            blankWords.join(" ");
+
+
+                        /*
+                            Create input.
+                        */
+
+                        const input =
+                            document.createElement(
+                                "input"
+                            );
+
+
+                        input.type = "text";
+
+                        input.className =
+                            "blank-input";
+
+
+                        input.autocomplete =
+                            "off";
+
+                        input.spellcheck =
+                            false;
+
+
+                        input.dataset.verse =
+                            verseData.verse;
+
+
+                        input.dataset.wordIndex =
+                            blankStartIndex;
+
+
+                        input.dataset.blankLength =
+                            blankWords.length;
+
+
+                        input.dataset.answer =
+                            correctPhrase;
+
+
+                        /*
+                            Restore any existing
+                            user answer.
+                        */
+
+                        input.value =
+                            verseData.words[
+                                blankStartIndex
+                            ].userAnswer || "";
+
+
+                        /*
+                            Width based on answer.
+                        */
+
+                        const cleanPhrase =
+                            correctPhrase.trim();
+
+
+                        input.style.width =
+                            Math.max(
+                                180,
+                                Math.min(
+                                    500,
+                                    cleanPhrase.length *
+                                    10 +
+                                    50
+                                )
+                            ) + "px";
+
+
+                        /*
+                            IMPORTANT:
+                            Store the original
+                            starting index.
+                        */
+
+                        input.addEventListener(
+                            "input",
+                            function () {
+
+                                const answer =
+                                    this.value;
+
+
+                                verseData.words[
+                                    blankStartIndex
+                                ].userAnswer =
+                                    answer;
+
+
+                                if (!quizChecked) {
+
+                                    this.classList.remove(
+                                        "correct",
+                                        "wrong",
+                                        "unanswered"
+                                    );
+
+                                }
+
+                            }
                         );
 
 
-                    verseDiv.appendChild(
-                        textNode
-                    );
+                        verseElement.appendChild(
+                            input
+                        );
 
 
-                    i++;
+                        /*
+                            Add a space after
+                            the input.
+                        */
 
-                }
-
-            }
-
-
-            content.appendChild(
-                verseDiv
-            );
-
-        }
-    );
-
-
-    /*
-        Reset buttons/results.
-    */
-
-    document
-        .getElementById("checkButton")
-        .classList.remove("hidden");
-
-
-    document
-        .getElementById("retestButton")
-        .classList.add("hidden");
-
-
-    document
-        .getElementById("restartButton")
-        .classList.add("hidden");
-
-
-    document
-        .getElementById("results")
-        .style.display = "none";
-}
-
-/*
-===========================================================
-    CHECK ANSWERS
-===========================================================
-*/
-
-function checkAnswers() {
-
-    let total = 0;
-    let correct = 0;
-    let wrong = 0;
-
-
-    currentQuiz.forEach(
-        verseData => {
-
-            let i = 0;
-
-
-            while (
-                i < verseData.words.length
-            ) {
-
-                const wordData =
-                    verseData.words[i];
-
-
-                if (!wordData.blank) {
-                    i++;
-                    continue;
-                }
-
-
-                /*
-                    Collect the complete multi-word blank.
-                */
-
-                const blankWords = [];
-
-                let j = i;
-
-
-                while (
-                    j < verseData.words.length &&
-                    verseData.words[j].blank
-                ) {
-
-                    blankWords.push(
-                        verseData.words[j]
-                    );
-
-                    j++;
-
-                }
-
-
-                total++;
-
-
-                /*
-                    Find the input belonging to
-                    this phrase.
-                */
-
-                const input =
-                    document.querySelector(
-                        `.blank-input[data-verse="${verseData.verse}"][data-word-index="${i}"]`
-                    );
-
-
-                if (!input) {
-                    i = j;
-                    continue;
-                }
-
-
-                const userAnswer =
-                    input.value.trim();
-
-
-                const correctAnswer =
-                    blankWords
-                        .map(
-                            word =>
-                                word.original
-                        )
-                        .join(" ");
-
-
-                /*
-                    Check the ENTIRE phrase.
-                */
-
-                const isCorrect =
-                    phraseIsEquivalent(
-                        userAnswer,
-                        correctAnswer
-                    );
-
-
-                /*
-                    Save result.
-                */
-
-                blankWords.forEach(
-                    word => {
-
-                        word.userAnswer =
-                            userAnswer;
-
-                        word.correct =
-                            isCorrect;
+                        verseElement.appendChild(
+                            document.createTextNode(
+                                " "
+                            )
+                        );
 
                     }
+
+
+                    quizArea.appendChild(
+                        verseElement
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           START QUIZ
+        ========================================================= */
+
+        function startQuiz() {
+
+            currentChapter =
+                Number(
+                    document.getElementById(
+                        "chapterSelect"
+                    ).value
                 );
 
 
-                /*
-                    Remove previous result styling.
-                */
-
-                input.classList.remove(
-                    "correct",
-                    "wrong",
-                    "unanswered"
+            currentPercentage =
+                Number(
+                    document.getElementById(
+                        "percentageSelect"
+                    ).value
                 );
 
 
-                /*
-                    Create/remove answer display.
-                */
-
-                const oldAnswer =
-                    input.parentNode.querySelector(
-                        `.correct-answer-display[data-for-verse="${verseData.verse}"][data-for-word="${i}"]`
-                    );
+            currentStartVerse =
+                Number(
+                    document.getElementById(
+                        "startVerse"
+                    ).value
+                );
 
 
-                if (oldAnswer) {
-                    oldAnswer.remove();
-                }
+            currentEndVerse =
+                Number(
+                    document.getElementById(
+                        "endVerse"
+                    ).value
+                );
 
 
-                /*
-                    CORRECT
-                */
+            /*
+                Validate verse range.
+            */
 
-                if (isCorrect) {
+            if (
+                currentStartVerse < 1
+            ) {
 
-                    input.classList.add(
-                        "correct"
-                    );
+                currentStartVerse = 1;
 
-                    correct++;
-
-                }
+            }
 
 
-                /*
-                    WRONG
-                */
+            if (
+                currentEndVerse <
+                currentStartVerse
+            ) {
 
-                else {
+                alert(
+                    "End verse must be greater than or equal to start verse."
+                );
 
-                    input.classList.add(
-                        "wrong"
-                    );
+                return;
 
-                    wrong++;
+            }
+
+
+            /*
+                Get available verses.
+            */
+
+            const verses =
+                getSelectedVerses();
+
+
+            const warning =
+                document.getElementById(
+                    "dataWarning"
+                );
+
+
+            /*
+                Warn if no verse data exists.
+            */
+
+            if (
+                verses.length === 0
+            ) {
+
+                warning.classList.remove(
+                    "hidden"
+                );
+
+                warning.innerHTML =
+                    `
+                    <strong>No verse data found.</strong><br>
+                    Please paste your Bible text into
+                    the <code>bibleData</code> section
+                    of the JavaScript.
+                    `;
+
+                document.getElementById(
+                    "quizArea"
+                ).innerHTML = "";
+
+                document.getElementById(
+                    "result"
+                ).classList.add(
+                    "hidden"
+                );
+
+                document.getElementById(
+                    "checkBtn"
+                ).classList.add(
+                    "hidden"
+                );
+
+                document.getElementById(
+                    "retestBtn"
+                ).classList.add(
+                    "hidden"
+                );
+
+                document.getElementById(
+                    "restartBtn"
+                ).classList.add(
+                    "hidden"
+                );
+
+                return;
+
+            }
+
+
+            warning.classList.add(
+                "hidden"
+            );
+
+
+            /*
+                Create fresh quiz.
+            */
+
+            quizChecked = false;
+
+
+            const quizData =
+                createQuiz(
+                    verses
+                );
+
+
+            renderQuiz(
+                quizData
+            );
+
+
+            /*
+                Show buttons.
+            */
+
+            document.getElementById(
+                "checkBtn"
+            ).classList.remove(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "restartBtn"
+            ).classList.remove(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "retestBtn"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "result"
+            ).classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        /* =========================================================
+           CHECK ANSWERS
+        ========================================================= */
+
+        function checkAnswers() {
+
+            if (quizChecked) {
+                return;
+            }
+
+
+            quizChecked = true;
+
+
+            const inputs =
+                document.querySelectorAll(
+                    ".blank-input"
+                );
+
+
+            let correct = 0;
+
+            let wrong = 0;
+
+            let unanswered = 0;
+
+            let total = inputs.length;
+
+
+            inputs.forEach(
+                input => {
+
+                    const userAnswer =
+                        input.value.trim();
+
+
+                    const correctAnswer =
+                        input.dataset.answer;
 
 
                     /*
-                        Show the correct answer.
+                        Find the verse data.
                     */
 
-                    const answerDisplay =
-                        document.createElement("span");
+                    const verseNumber =
+                        Number(
+                            input.dataset.verse
+                        );
 
 
-                    answerDisplay.className =
-                        "correct-answer-display";
+                    const wordIndex =
+                        Number(
+                            input.dataset.wordIndex
+                        );
 
 
-                    answerDisplay.dataset.forVerse =
-                        verseData.verse;
+                    const chapterData =
+                        bibleData[
+                            currentChapter
+                        ];
 
 
-                    answerDisplay.dataset.forWord =
-                        i;
+                    const verseData =
+                        chapterData[
+                            verseNumber
+                        ];
 
 
-                    answerDisplay.textContent =
-                        correctAnswer;
-
-
-                    input.insertAdjacentElement(
-                        "afterend",
-                        answerDisplay
-                    );
-                    
-                    
                     /*
-                        Add a real space after the
-                        correct-answer box.
-                    
-                        This prevents:
-                    
-                        "answer"with
-                    
-                        and gives:
-                    
-                        "answer" with
+                        Empty answer.
                     */
-                    
-                    const answerDisplay =
-                        document.createElement("span");
-                    
-                    answerDisplay.className =
-                        "correct-answer-display";
-                    
-                    answerDisplay.dataset.forVerse =
-                        verseData.verse;
-                    
-                    answerDisplay.dataset.forWord =
-                        i;
-                    
-                    answerDisplay.textContent =
-                        correctAnswer;
-                    
-                    input.insertAdjacentElement(
-                        "afterend",
-                        answerDisplay
-                    );
-                    
-                    /* Add a real space after the answer */
-                    answerDisplay.insertAdjacentText(
-                        "afterend",
-                        " "
+
+                    if (
+                        userAnswer === ""
+                    ) {
+
+                        input.classList.add(
+                            "unanswered"
+                        );
+
+                        unanswered++;
+
+                        /*
+                            Mark the phrase wrong.
+                        */
+
+                        if (verseData) {
+
+                            const words =
+                                verseData
+                                    .trim()
+                                    .split(/\s+/);
+
+
+                            const blankLength =
+                                Number(
+                                    input.dataset.blankLength
+                                );
+
+
+                            for (
+                                let i = wordIndex;
+                                i <
+                                wordIndex +
+                                blankLength;
+                                i++
+                            ) {
+
+                                if (
+                                    verseData
+                                ) {
+                                    // State is stored separately below.
+                                }
+
+                            }
+
+                        }
+
+
+                        /*
+                            Show correct answer
+                            for unanswered blank.
+                        */
+
+                        const answerDisplay =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        answerDisplay.className =
+                            "correct-answer-display";
+
+
+                        answerDisplay.dataset.forVerse =
+                            verseNumber;
+
+
+                        answerDisplay.dataset.forWord =
+                            wordIndex;
+
+
+                        answerDisplay.textContent =
+                            correctAnswer;
+
+
+                        input.insertAdjacentElement(
+                            "afterend",
+                            answerDisplay
+                        );
+
+
+                        /*
+                            Add a real space.
+                        */
+
+                        answerDisplay.insertAdjacentText(
+                            "afterend",
+                            " "
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /*
+                        Compare answer.
+                    */
+
+                    const isCorrect =
+                        phraseIsEquivalent(
+                            userAnswer,
+                            correctAnswer
+                        );
+
+
+                    if (isCorrect) {
+
+                        input.classList.add(
+                            "correct"
+                        );
+
+                        correct++;
+
+                    }
+
+                    else {
+
+                        input.classList.add(
+                            "wrong"
+                        );
+
+                        wrong++;
+
+
+                        /*
+                            Show the correct answer.
+                        */
+
+                        const answerDisplay =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        answerDisplay.className =
+                            "correct-answer-display";
+
+
+                        answerDisplay.dataset.forVerse =
+                            verseNumber;
+
+
+                        answerDisplay.dataset.forWord =
+                            wordIndex;
+
+
+                        answerDisplay.textContent =
+                            correctAnswer;
+
+
+                        input.insertAdjacentElement(
+                            "afterend",
+                            answerDisplay
+                        );
+
+
+                        /*
+                            Add a real space after
+                            the displayed answer.
+                        */
+
+                        answerDisplay.insertAdjacentText(
+                            "afterend",
+                            " "
+                        );
+
+                    }
+
+
+                    /*
+                        Save state for retest.
+                    */
+
+                    if (verseData) {
+
+                        const words =
+                            verseData
+                                .trim()
+                                .split(/\s+/);
+
+
+                        const blankLength =
+                            Number(
+                                input.dataset.blankLength
+                            );
+
+
+                        /*
+                            Store result directly
+                            in a temporary property.
+                        */
+
+                        if (!window.quizStates) {
+
+                            window.quizStates = {};
+
+                        }
+
+
+                        if (
+                            !window.quizStates[
+                                currentChapter
+                            ]
+                        ) {
+
+                            window.quizStates[
+                                currentChapter
+                            ] = {};
+
+                        }
+
+
+                        window.quizStates[
+                            currentChapter
+                        ][
+                            `${verseNumber}-${wordIndex}`
+                        ] = {
+
+                            correct:
+                                isCorrect,
+
+                            answer:
+                                userAnswer,
+
+                            correctAnswer:
+                                correctAnswer,
+
+                            length:
+                                blankLength
+
+                        };
+
+                    }
+
+
+                    /*
+                        Lock answer after checking.
+                    */
+
+                    input.readOnly = true;
+
+                    input.classList.add(
+                        "checked"
                     );
 
                 }
+            );
 
 
-                /*
-                    Lock the input after checking.
-                */
+            /*
+                Calculate score.
 
-                input.classList.add(
-                    "checked"
+                Empty answers count as wrong.
+            */
+
+            const score =
+                total > 0
+                    ? Math.round(
+                        correct /
+                        total *
+                        100
+                    )
+                    : 0;
+
+
+            /*
+                Show result.
+            */
+
+            const result =
+                document.getElementById(
+                    "result"
                 );
 
-                input.readOnly = true;
+
+            let resultClass =
+                "success";
 
 
-                /*
-                    Move to the next blank group.
-                */
+            if (
+                score < 70
+            ) {
 
-                i = j;
+                resultClass =
+                    "failure";
+
+            }
+
+
+            result.classList.remove(
+                "hidden"
+            );
+
+
+            result.innerHTML =
+                `
+                <h2>Quiz Result</h2>
+
+                <div class="score ${resultClass}">
+                    ${correct} / ${total}
+                    (${score}%)
+                </div>
+
+                <div>
+                    Correct: <strong>${correct}</strong>
+                    &nbsp; | &nbsp;
+                    Wrong: <strong>${wrong}</strong>
+                    &nbsp; | &nbsp;
+                    Unanswered: <strong>${unanswered}</strong>
+                </div>
+                `;
+
+
+            /*
+                Hide Check button.
+            */
+
+            document.getElementById(
+                "checkBtn"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            /*
+                Show retest only if
+                there are wrong answers.
+            */
+
+            if (
+                wrong > 0 ||
+                unanswered > 0
+            ) {
+
+                document.getElementById(
+                    "retestBtn"
+                ).classList.remove(
+                    "hidden"
+                );
 
             }
 
         }
-    );
 
 
-    quizChecked = true;
+        /* =========================================================
+           RETEST WRONG ANSWERS
+        ========================================================= */
+
+        function retestWrongAnswers() {
+
+            /*
+                Find all currently displayed
+                blank inputs.
+            */
+
+            const inputs =
+                document.querySelectorAll(
+                    ".blank-input"
+                );
 
 
-    /*
-        Calculate score.
-    */
+            const wrongBlanks = [];
 
-    const score =
-        total === 0
-            ? 0
-            : Math.round(
-                (correct / total) * 100
+
+            inputs.forEach(
+                input => {
+
+                    const isWrong =
+                        input.classList.contains(
+                            "wrong"
+                        ) ||
+                        input.classList.contains(
+                            "unanswered"
+                        );
+
+
+                    if (!isWrong) {
+                        return;
+                    }
+
+
+                    wrongBlanks.push({
+
+                        verse:
+                            Number(
+                                input.dataset.verse
+                            ),
+
+                        wordIndex:
+                            Number(
+                                input.dataset.wordIndex
+                            ),
+
+                        length:
+                            Number(
+                                input.dataset.blankLength
+                            )
+
+                    });
+
+                }
             );
 
 
-    document
-        .getElementById("scoreDisplay")
-        .textContent =
-            `Score: ${score}%`;
+            /*
+                Nothing to retest.
+            */
 
+            if (
+                wrongBlanks.length === 0
+            ) {
 
-    /*
-        Display result.
-    */
+                alert(
+                    "There are no wrong answers to retest."
+                );
 
-    const results =
-        document.getElementById("results");
+                return;
 
+            }
 
-    results.style.display =
-        "block";
 
+            /*
+                Get original chapter data.
+            */
 
-    document
-        .getElementById("resultScore")
-        .textContent =
-            `${score}%`;
+            const chapter =
+                bibleData[
+                    currentChapter
+                ];
 
 
-    document
-        .getElementById("resultScore")
-        .className =
-            "result-score " +
-            (
-                score >= 80
-                    ? "success"
-                    : "failure"
-            );
+            /*
+                Reset all verse data.
+            */
 
+            const verses = [];
 
-    document
-        .getElementById("resultDetails")
-        .textContent =
-            `Correct: ${correct} • Wrong: ${wrong} • Total blanks: ${total}`;
 
+            for (
+                let verse =
+                    currentStartVerse;
 
-    /*
-        Show Retest button only if
-        there are wrong answers.
-    */
+                verse <= currentEndVerse;
 
-    if (wrong > 0) {
-
-        document
-            .getElementById("retestButton")
-            .classList.remove("hidden");
-
-    } else {
-
-        document
-            .getElementById("retestButton")
-            .classList.add("hidden");
-
-    }
-
-
-    /*
-        Show New Quiz button.
-    */
-
-    document
-        .getElementById("restartButton")
-        .classList.remove("hidden");
-
-
-    /*
-        Hide Check button.
-    */
-
-    document
-        .getElementById("checkButton")
-        .classList.add("hidden");
-
-
-    results.scrollIntoView({
-        behavior: "smooth"
-    });
-}
-
-/*
-===========================================================
-    WORD COMPARISON
-===========================================================
-
-    Rules:
-
-    1. Word-by-word strict checking.
-    2. Punctuation ignored.
-    3. Capitalization ignored.
-    4. Apostrophe variations accepted.
-    5. God's = Gods = God s
-    . Similar possessive forms are normalized.
-
-===========================================================
-*/
-
-function normalizeWord(word) {
-
-    if (!word) {
-        return "";
-    }
-
-
-    let normalized =
-        word
-            .toLowerCase()
-            .trim();
-
-
-    /*
-        Remove punctuation.
-
-        Examples:
-
-        throne,
-        throne.
-        throne;
-        throne:
-
-        become:
-
-        throne
-    */
-
-    normalized =
-        normalized.replace(
-            /[.,!?;:"“”‘’()[\]{}—–\-]/g,
-            ""
-        );
-
-
-    /*
-        Remove apostrophes.
-
-        God's
-        God’s
-        Gods
-
-        all become:
-
-        gods
-    */
-
-    normalized =
-        normalized.replace(
-            /['’`]/g,
-            ""
-        );
-
-
-    /*
-        Remove whitespace.
-
-        God s
-        becomes:
-
-        gods
-    */
-
-    normalized =
-        normalized.replace(
-            /\s+/g,
-            ""
-        );
-
-
-    return normalized;
-}
-
-
-function phraseIsEquivalent(
-    userAnswer,
-    correctAnswer
-) {
-
-    /*
-        Normalize the complete phrase.
-
-        This:
-        - ignores capitalization
-        - ignores punctuation
-        - accepts straight/curly apostrophes
-        - removes extra spaces
-    */
-
-    if (!userAnswer || !correctAnswer) {
-        return false;
-    }
-
-
-    const userWords =
-        userAnswer
-            .trim()
-            .split(/\s+/)
-            .map(word => normalizeWord(word))
-            .filter(word => word !== "");
-
-
-    const correctWords =
-        correctAnswer
-            .trim()
-            .split(/\s+/)
-            .map(word => normalizeWord(word))
-            .filter(word => word !== "");
-
-
-    /*
-        The number of words must match.
-
-        Therefore:
-
-        "throne in heaven"
-
-        is NOT accepted as:
-
-        "throne heaven"
-    */
-
-    if (
-        userWords.length !==
-        correctWords.length
-    ) {
-
-        return false;
-
-    }
-
-
-    /*
-        Compare each word.
-    */
-
-    for (
-        let i = 0;
-        i < correctWords.length;
-        i++
-    ) {
-
-        if (
-            userWords[i] !==
-            correctWords[i]
-        ) {
-
-            return false;
-
-        }
-
-    }
-
-
-    return true;
-}
-
-/*
-===========================================================
-    REMOVE PUNCTUATION
-===========================================================
-*/
-
-function removePunctuation(word) {
-
-    return word
-        .replace(
-            /[.,!?;:"“”‘’()[\]{}—–\-]/g,
-            ""
-        );
-}
-
-
-/*
-===========================================================
-    RETEST WRONG ANSWERS
-===========================================================
-
-    Important:
-
-    Only words that were previously wrong
-    become blanks.
-
-    Correct words are shown normally.
-
-    The wrong words are randomized into a
-    new test arrangement if there are multiple
-    wrong words.
-
-===========================================================
-*/
-
-function retestWrongAnswers() {
-
-    const wrongGroups = [];
-
-
-    /*
-        Find all wrong multi-word blanks.
-    */
-
-    currentQuiz.forEach(
-        verseData => {
-
-            let i = 0;
-
-
-            while (
-                i < verseData.words.length
+                verse++
             ) {
 
                 if (
-                    !verseData.words[i].blank
+                    chapter[verse] &&
+                    chapter[verse].trim() !== ""
                 ) {
 
-                    i++;
-                    continue;
-
-                }
-
-
-                const blankWords = [];
-
-                let j = i;
+                    const words =
+                        chapter[verse]
+                            .trim()
+                            .split(/\s+/);
 
 
-                while (
-                    j < verseData.words.length &&
-                    verseData.words[j].blank
-                ) {
+                    verses.push({
 
-                    blankWords.push(
-                        verseData.words[j]
-                    );
+                        verse: verse,
 
-                    j++;
-
-                }
-
-
-                /*
-                    The whole phrase is wrong
-                    if its first word is wrong.
-                */
-
-                if (
-                    verseData.words[i].correct === false
-                ) {
-
-                    wrongGroups.push({
-
-                        verse:
-                            verseData.verse,
-
-                        startIndex:
-                            i,
-
-                        length:
-                            j - i
+                        words:
+                            words.map(
+                                word => ({
+                                    text: word,
+                                    blank: false,
+                                    userAnswer: "",
+                                    correct: null
+                                })
+                            )
 
                     });
 
                 }
 
-
-                i = j;
-
             }
 
-        }
-    );
+
+            /*
+                Reapply only wrong blanks.
+            */
+
+            wrongBlanks.forEach(
+                blank => {
+
+                    const verseData =
+                        verses.find(
+                            v =>
+                                v.verse ===
+                                blank.verse
+                        );
 
 
-    if (
-        wrongGroups.length === 0
-    ) {
-
-        alert(
-            "There are no wrong answers to retest."
-        );
-
-        return;
-    }
+                    if (!verseData) {
+                        return;
+                    }
 
 
-    /*
-        Clear ALL previous blanks.
-    */
+                    for (
+                        let i =
+                            blank.wordIndex;
 
-    currentQuiz.forEach(
-        verseData => {
+                        i <
+                        blank.wordIndex +
+                        blank.length;
 
-            verseData.words.forEach(
-                wordData => {
+                        i++
+                    ) {
 
-                    wordData.blank =
-                        false;
+                        if (
+                            verseData.words[i]
+                        ) {
 
-                    wordData.userAnswer =
-                        "";
+                            verseData.words[i].blank =
+                                true;
 
-                    wordData.correct =
-                        null;
+                        }
+
+                    }
 
                 }
             );
 
-        }
-    );
+
+            /*
+                Convert verse objects back
+                into renderable format.
+            */
+
+            quizChecked = false;
 
 
-    /*
-        Make ONLY the previously wrong
-        phrases into blanks again.
-    */
+            /*
+                Remove all previous
+                correct-answer displays.
+            */
 
-    wrongGroups.forEach(
-        group => {
-
-            const verse =
-                currentQuiz.find(
-                    v =>
-                        v.verse === group.verse
+            document
+                .querySelectorAll(
+                    ".correct-answer-display"
+                )
+                .forEach(
+                    element =>
+                        element.remove()
                 );
 
 
-            if (!verse) {
-                return;
-            }
+            /*
+                Render only the previous
+                wrong blanks.
+            */
 
-
-            for (
-                let i = 0;
-                i < group.length;
-                i++
-            ) {
-
-                const word =
-                    verse.words[
-                        group.startIndex + i
-                    ];
-
-
-                if (word) {
-
-                    word.blank =
-                        true;
-
-                    word.correct =
-                        null;
-
-                    word.userAnswer =
-                        "";
-
-                }
-
-            }
-
-        }
-    );
-
-
-    /*
-        Render the quiz again.
-
-        This automatically removes the
-        correct-answer displays because
-        renderQuiz() rebuilds the verse.
-    */
-
-    quizChecked = false;
-
-
-    renderQuiz();
-
-
-    document
-        .getElementById("scoreDisplay")
-        .textContent =
-            `Retest • ${wrongGroups.length} blank${wrongGroups.length === 1 ? "" : "s"}`;
-
-
-    document
-        .getElementById("quizHeading")
-        .textContent =
-            `Revelation ${currentChapter} — Retest`;
-
-
-    document
-        .getElementById("quizCard")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-
-}
-    
-function shuffleArray(array) {
-
-    for (
-        let i = array.length - 1;
-        i > 0;
-        i--
-    ) {
-
-        const j =
-            Math.floor(
-                Math.random() * (i + 1)
+            renderQuiz(
+                verses
             );
 
 
-        [
-            array[i],
-            array[j]
-        ] = [
-            array[j],
-            array[i]
-        ];
-    }
+            /*
+                Change heading.
+            */
+
+            const heading =
+                document.querySelector(
+                    ".chapter-title"
+                );
 
 
-    return array;
-}
+            if (heading) {
+
+                heading.textContent =
+                    `Revelation ${currentChapter} — Retest`;
+
+            }
 
 
-/*
-===========================================================
-    INITIALIZE
-===========================================================
-*/
+            /*
+                Update buttons.
+            */
 
-updateVerseLimits();
+            document.getElementById(
+                "checkBtn"
+            ).classList.remove(
+                "hidden"
+            );
 
-</script>
+
+            document.getElementById(
+                "retestBtn"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "result"
+            ).classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        /* =========================================================
+           CHAPTER CHANGE
+           
+           Automatically adjust end verse
+           when changing chapter.
+        ========================================================= */
+
+        document
+            .getElementById(
+                "chapterSelect"
+            )
+            .addEventListener(
+                "change",
+                function () {
+
+                    const chapter =
+                        Number(
+                            this.value
+                        );
+
+
+                    const verseCount =
+                        Object.keys(
+                            bibleData[chapter] || {}
+                        ).length;
+
+
+                    document.getElementById(
+                        "startVerse"
+                    ).value = 1;
+
+
+                    document.getElementById(
+                        "endVerse"
+                    ).value =
+                        verseCount || 1;
+
+                }
+            );
+
+
+        /* =========================================================
+           INITIAL SETUP
+        ========================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const chapter =
+                    Number(
+                        document.getElementById(
+                            "chapterSelect"
+                        ).value
+                    );
+
+
+                const verseCount =
+                    Object.keys(
+                        bibleData[chapter] || {}
+                    ).length;
+
+
+                document.getElementById(
+                    "endVerse"
+                ).value =
+                    verseCount || 1;
+
+            }
+        );
+
+    </script>
 
 </body>
-</html>
 
+</html>
