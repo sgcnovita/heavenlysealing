@@ -1070,260 +1070,324 @@
         ========================================================= */
 
         function createQuiz(verses) {
-
+        
+            /*
+                ==========================================
+                SPECIAL CASE: 100% BLANK
+                ==========================================
+        
+                If 100% is selected, every word is blank.
+        
+                We still group the words into chunks of
+                2–6 words so the input boxes don't become
+                extremely large.
+            */
+        
+            if (currentPercentage === 100) {
+        
+                verses.forEach(
+                    verseData => {
+        
+                        const words =
+                            verseData.text
+                                .trim()
+                                .split(/\s+/);
+        
+        
+                        verseData.words =
+                            words.map(
+                                word => ({
+        
+                                    text: word,
+        
+                                    blank: true,
+        
+                                    userAnswer: "",
+        
+                                    correct: null
+        
+                                })
+                            );
+        
+                    }
+                );
+        
+        
+                return verses;
+            }
+        
+        
+            /*
+                ==========================================
+                NORMAL MODE: 10–90%
+                ==========================================
+            */
+        
             const allWords = [];
-
+        
             let totalWords = 0;
-
-
+        
+        
             /*
                 Split every verse into words.
             */
-
+        
             verses.forEach(
                 verseData => {
-
+        
                     const words =
                         verseData.text
                             .trim()
                             .split(/\s+/);
-
-
+        
+        
                     verseData.words =
                         words.map(
                             word => ({
+        
                                 text: word,
+        
                                 blank: false,
+        
                                 userAnswer: "",
+        
                                 correct: null
+        
                             })
                         );
-
-
+        
+        
                     totalWords +=
                         verseData.words.length;
-
-
+        
+        
                     verseData.words.forEach(
                         (word, index) => {
-
+        
                             allWords.push({
-
+        
                                 verse:
                                     verseData.verse,
-
+        
                                 index: index
-
+        
                             });
-
+        
                         }
                     );
-
+        
                 }
             );
-
-
+        
+        
             /*
-                Calculate approximate number
-                of words to hide.
+                Calculate how many words should
+                approximately be hidden.
             */
-
+        
             let targetBlankWords =
                 Math.round(
                     totalWords *
                     currentPercentage /
                     100
                 );
-
-
+        
+        
             /*
-                Make sure a blank contains
-                at least 2 words.
+                Minimum blank size is 2 words.
             */
-
+        
             if (
                 totalWords >= 2 &&
                 targetBlankWords < 2
             ) {
-
+        
                 targetBlankWords = 2;
-
+        
             }
-
-
+        
+        
             /*
-                Shuffle possible blank starts.
+                Randomize possible starting positions.
             */
-
+        
             const possibleStarts =
                 shuffle(allWords);
-
-
+        
+        
             let blankWordsCreated = 0;
-
-
+        
+        
             /*
-                Create multi-word blanks.
+                Create random 2–6 word blanks.
             */
-
+        
             for (
                 const start of possibleStarts
             ) {
-
+        
                 if (
                     blankWordsCreated >=
                     targetBlankWords
                 ) {
-
+        
                     break;
-
+        
                 }
-
-
+        
+        
                 const verseData =
                     verses.find(
                         v =>
                             v.verse ===
                             start.verse
                     );
-
-
+        
+        
                 if (!verseData) {
                     continue;
                 }
-
-
+        
+        
                 const remainingWords =
                     verseData.words.length -
                     start.index;
-
-
+        
+        
                 /*
-                    Every blank must contain
+                    A blank must contain
                     at least 2 words.
                 */
-
+        
                 if (
                     remainingWords < 2
                 ) {
-
+        
                     continue;
-
+        
                 }
-
-
+        
+        
                 /*
-                    Check whether this start
-                    is already inside a blank.
+                    Don't overlap another blank.
                 */
-
+        
                 let alreadyBlank = false;
-
+        
+        
                 for (
                     let j = start.index;
+        
                     j < verseData.words.length &&
                     j < start.index + 6;
+        
                     j++
                 ) {
-
+        
                     if (
                         verseData.words[j].blank
                     ) {
-
+        
                         alreadyBlank = true;
-
+        
                         break;
-
+        
                     }
-
+        
                 }
-
-
+        
+        
                 if (alreadyBlank) {
                     continue;
                 }
-
-
+        
+        
                 /*
-                    Desired blank size:
-                    2–6 words.
+                    Determine maximum blank size.
                 */
-
+        
                 let maxLength =
                     Math.min(
                         6,
                         remainingWords
                     );
-
-
+        
+        
                 /*
-                    Do not create a blank
-                    larger than the remaining
-                    target.
+                    Don't exceed the target.
                 */
-
+        
                 maxLength =
                     Math.min(
                         maxLength,
                         targetBlankWords -
                         blankWordsCreated
                     );
-
-
+        
+        
                 if (
                     maxLength < 2
                 ) {
-
+        
                     continue;
-
+        
                 }
-
-
+        
+        
+                /*
+                    Random blank size:
+                    2–6 words.
+                */
+        
                 let blankLength =
                     Math.floor(
                         Math.random() *
                         (maxLength - 1)
                     ) + 2;
-
-
+        
+        
                 /*
-                    If only 2 words remain
-                    in the target, use 2.
+                    If only two words remain
+                    in the target, use exactly 2.
                 */
-
+        
                 if (
                     targetBlankWords -
                     blankWordsCreated <= 2
                 ) {
-
+        
                     blankLength = 2;
-
+        
                 }
-
-
+        
+        
                 /*
-                    Mark the words blank.
+                    Mark words as blank.
                 */
-
+        
                 for (
                     let j = start.index;
-                    j < start.index + blankLength;
+        
+                    j <
+                    start.index + blankLength;
+        
                     j++
                 ) {
-
-                    verseData.words[j].blank = true;
-
+        
+                    verseData.words[j].blank =
+                        true;
+        
                 }
-
-
+        
+        
                 blankWordsCreated +=
                     blankLength;
-
+        
             }
-
-
+        
+        
             return verses;
-
+        
         }
 
 
