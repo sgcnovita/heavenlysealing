@@ -15,7 +15,7 @@
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4ff8;
+            background: #f4f8ff;
             color: #222;
         }
 
@@ -94,14 +94,14 @@
         }
 
         .start-btn {
-            background: #253eb;
-            color: white;
-        }
+        background: #2563eb;
+        color: white;
+    }
 
         .check-btn {
-            background: #1a34a;
-            color: white;
-        }
+        background: #16a34a;
+        color: white;
+    }
 
         .retest-btn {
             background: #7c3aed;
@@ -109,7 +109,7 @@
         }
 
         .restart-btn {
-            background: #47559;
+            background: #475569;
             color: white;
         }
 
@@ -147,14 +147,14 @@
 
         .verse-number {
             font-weight: bold;
-            color: #253eb;
-            margin-right: px;
+            color: #2563eb;
+            margin-right: 6px;
         }
 
         .blank-input {
             display: inline-block;
             vertical-align: middle;
-            min-width: 5px;
+            min-width: 180px;
             width: 90px;
             max-width: 100%;
             height: 34px;
@@ -162,7 +162,7 @@
             padding: 3px 7px;
             border: 2px solid #94a3b8;
             border-radius: 5px;
-            font-size: 1px;
+            font-size: 16px;
             font-family: inherit;
             background: #fff;
         }
@@ -301,7 +301,7 @@
             }
 
             .verse {
-                font-size: 1px;
+                font-size: 15px;
             }
 
             .quiz-title {
@@ -310,16 +310,17 @@
             }
             .correct-answer-display {
                 display: inline-block;
-                color: #05f4;
+                color: #065f46;
                 background: #bbf7d0;
-                border: 2px solid #1a34a;
-                border-radius: px;
+                border: 2px solid #16a34a;
+                border-radius: 6px;
                 padding: 4px 10px;
                 margin-left: 8px;
                 margin-right: 8px;
                 font-size: 14px;
                 font-weight: bold;
                 line-height: 1.5;
+                vertical-align: middle;
             }
             
             .correct-answer-display::before {
@@ -587,7 +588,7 @@ const bibleData = {
 
         9: "And they sang a new song, saying:\n“You are worthy to take the scroll\nand to open its seals,\nbecause you were slain,\nand with your blood you purchased for God\npersons from every tribe and language and people and nation.",
 
-        10: "ou have made them to be a kingdom and priests to serve our God,\nand they will reign on the earth.”",
+        10: "You have made them to be a kingdom and priests to serve our God,\nand they will reign on the earth.”",
 
         11: "Then I looked and heard the voice of many angels, numbering thousands upon thousands, and ten thousand times ten thousand. They encircled the throne and the living creatures and the elders.",
 
@@ -612,7 +613,7 @@ const bibleData = {
 
         5: "When the Lamb opened the third seal, I heard the third living creature say, “Come!” I looked, and there before me was a black horse! Its rider was holding a pair of scales in his hand.",
 
-        : "Then I heard what sounded like a voice among the four living creatures, saying, “Two pounds of wheat for a day’s wages, and six pounds of barley for a day’s wages, and do not damage the oil and the wine!”",
+        6: "Then I heard what sounded like a voice among the four living creatures, saying, “Two pounds of wheat for a day’s wages, and six pounds of barley for a day’s wages, and do not damage the oil and the wine!”",
 
         7: "When the Lamb opened the fourth seal, I heard the voice of the fourth living creature say, “Come!”",
 
@@ -1011,7 +1012,7 @@ function createQuiz(
 
         for (
             let length = 2;
-            length <= Math.min(, remainingWords);
+            length <= Math.min(6, remainingWords);
             length++
         ) {
 
@@ -1720,12 +1721,30 @@ function checkAnswers() {
                         "answer" with
                     */
                     
-                    const spaceAfterAnswer =
-                        document.createTextNode(" ");
+                    const answerDisplay =
+                        document.createElement("span");
                     
-                    answerDisplay.insertAdjacentElement(
+                    answerDisplay.className =
+                        "correct-answer-display";
+                    
+                    answerDisplay.dataset.forVerse =
+                        verseData.verse;
+                    
+                    answerDisplay.dataset.forWord =
+                        i;
+                    
+                    answerDisplay.textContent =
+                        correctAnswer;
+                    
+                    input.insertAdjacentElement(
                         "afterend",
-                        spaceAfterAnswer
+                        answerDisplay
+                    );
+                    
+                    /* Add a real space after the answer */
+                    answerDisplay.insertAdjacentText(
+                        "afterend",
+                        " "
                     );
 
                 }
